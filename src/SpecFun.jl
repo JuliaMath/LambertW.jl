@@ -1,5 +1,5 @@
 module SpecFun
+include("lambertw.jl")
+include("jacobi.jl")
+end # module SpecFun
 
-# package code goes here
-
-end # module
