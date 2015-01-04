@@ -34,7 +34,25 @@ julia> lambertw(1.0)
 0.5671432904097838
 ```
 
-It's fun to handle exact expressions:
+### lambertwm1(x)
+
+Lambert W function of "-1/e + x" on the branch of index -1.
+For Float64 x < 1e-7 (approximately) this is more accurate than
+`lambertw(-1/e+x,-1)`.
+
+```julia
+julia> lambertwm1(1e-18)
+-1.000000002331644
+
+julia> lambertwm1(0)
+-1.0
+```
+
+`lambertwm1` uses a series expansion about the pole `z=-/e`.
+
+### Symbolic things
+
+It's fun to see exact expressions:
 
 ```julia
 julia> lambertw(:(-1/e))
@@ -63,9 +81,6 @@ this symbolic knowledge is of limited use. For instance, we don't have a rule fo
 julia> lambertw(:(pi/-2))
 :(lambertw(pi / -2,0))
 ```
-
-But, in principle, for a general purpose language, Julia is very well suited for
-implementing symbolic manipulation.
 
 ### omega constant
 

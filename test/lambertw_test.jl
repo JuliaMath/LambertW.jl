@@ -20,3 +20,6 @@ for z in [ BigFloat(1),  BigFloat(2), complex(BigFloat(1), BigFloat(1))]
     w = lambertw(z)
     @test abs(z - w * exp(w)) < BigFloat(1)^(-70)
 end
+
+# test the expansion about pole for k=-1
+@test lambertwm1(1e-20) - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16

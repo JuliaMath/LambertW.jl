@@ -1,4 +1,4 @@
-export lambertw
+export lambertw, lambertwm1
 export ω
 export omega
 
@@ -16,9 +16,9 @@ function _lambertw{T<:Number}(z::T, x::T)
         x1 = x + 1
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
         diff = abs(lastx - x)
-        diff <= 2*eps(abs(lastx)) && break
+        diff <= eps(abs(lastx)) && break
         if lastdiff == diff
-            warn("lambertw did not converge")
+            warn("lambertw did not converge. diff=$diff")
             break
         end
         lastx = x
@@ -44,7 +44,7 @@ function lambertwk0{T<:Real}(x::T)
 end
 
 # Real x, k = -1
-function lambertwkm1{T<:Real}(x::T)
+function _lambertwkm1{T<:Real}(x::T)
     -one(T)/convert(T,e) < x < zero(T) || return NaN
     _lambertw(x,log(-x))
 end
@@ -81,7 +81,7 @@ end
 
 function lambertw{T<:Real}(x::T, k::Int)
     k == 0 && return lambertwk0(x)
-    k == -1 && return lambertwkm1(x)
+    k == -1 && return _lambertwkm1(x)
     error("lambertw: real x must have k == 0 or k == -1")
 end
 
@@ -103,6 +103,46 @@ function lambertw(::MathConst{:e}, k::Int)
 end
     
 lambertw(x::Number) = lambertw(x,0)
+
+# These literals have more than Float64 and BigFloat 256 precision
+const omega_const_ = 0.567143290409783872999968662210355
+const omega_const_bf_ = BigFloat("0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
+
+# maybe compute higher precision. converges very quickly
+function omega_const(::Type{BigFloat})
+    get_bigfloat_precision() <= 256 && return omega_const_bf_
+    myeps = eps(BigFloat)
+    oc = omega_const_bf_
+    for i in 1:100
+        nextoc = (1 + oc) / (1 + exp(oc))
+        abs(oc - nextoc) <= myeps && break
+        oc = nextoc
+    end
+    oc
+end
+
+const ω = MathConst{:ω}()
+const omega = ω
+convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
+convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
+
+# These do not seem to be more accurate, in fact, even close to branch
+# points. I doubt more terms would make a difference.
+# note that pz(z) uses the difference between numbers that are nearly equal.
+
+# Series near branch point z = -1/e
+pz(z) = -sqrt(2*(e*z+1))
+
+# wexp is series expansion about -1/e
+wser(p) = (ps = p*p; -1 + p - ps / 3 + (11/72)*p*ps)
+wexp(x) = wser(pz(x))
+
+# wexpdiff(z) computes lambertw(-1/e+x,-1) for small positive x
+pzdiff(x) = -sqrt(2*e*x)
+
+lambertwm1(x) = wser(pzdiff(x))
+
+### Following is only playing with rewriting expressions.
 
 iscall(ex::Expr) = ex.head == :call
 isop(ex::Expr, s::Symbol) = iscall(ex) && ex.args[1] == s
@@ -132,32 +172,3 @@ function lambertw(ex::Expr, k::Int)
 end
 
 lambertw(ex::Expr) = lambertw(ex,0)
-
-# These literals have more than Float64 and BigFloat 256 precision
-const omega_const_ = 0.567143290409783872999968662210355
-const omega_const_bf_ = BigFloat("0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
-
-# maybe compute higher precision. converges very quickly
-function omega_const(::Type{BigFloat})
-    get_bigfloat_precision() <= 256 && return omega_const_bf_
-    myeps = eps(BigFloat)
-    oc = omega_const_bf_
-    for i in 1:100
-        nextoc = (1 + oc) / (1 + exp(oc))
-        abs(oc - nextoc) <= myeps && break
-        oc = nextoc
-    end
-    oc
-end
-
-const ω = MathConst{:ω}()
-const omega = ω
-convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
-convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
-
-# These do not seem to be more accurate, in fact,
-# even close to branch points. I doubt more terms would
-# make a difference.
-# Series near branch point z = -1/e
-pz(z) = -sqrt(2*(e*z+1))
-wser(z) = (p=pz(z); ps = p*p; -1 + p - ps / 3 + (11/72)*p*ps)
