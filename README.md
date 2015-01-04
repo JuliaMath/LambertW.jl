@@ -39,16 +39,16 @@ ulia> lambertw(-pi/2 + 0im)  / pi
 
 ### lambertwm1(x)
 
-Lambert W function of "-1/e + x" on the branch of index -1.
+`1 + W(-1/e + x)` on the  the branch of index -1.
 For "Float64" argument x < 1e-7 (approximately) this is more accurate than
 `lambertw(-1/e+x,-1)`.
 
 ```julia
 julia> lambertwm1(1e-18)
--1.000000002331644
+-2.3316439834093117e-9
 
 julia> lambertwm1(0)
--1.0
+-0.0
 ```
 
 `lambertwm1` uses a series expansion about the pole `z=-1/e`.

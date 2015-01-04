@@ -133,8 +133,8 @@ convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 # Series near branch point z = -1/e
 pz(z) = -sqrt(2*(e*z+1))
 
-# wexp is series expansion about -1/e
-wser(p) = (ps = p*p; -1 + p - ps / 3 + (11/72)*p*ps)
+# wexp is series expansion about -1/e,  1 + W(-1/e + x)
+wser(p) = (ps = p*p;  p - ps / 3 + (11/72)*p*ps)
 wexp(x) = wser(pz(x))
 
 # wexpdiff(z) computes lambertw(-1/e+x,-1) for small positive x
