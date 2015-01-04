@@ -86,10 +86,52 @@ function lambertw{T<:Real}(x::T, k::Int)
 end
 
 lambertw(z::Complex{Int}, k::Int) = lambertw(float(z),k)
-lambertw{T<:Integer}(x::T, k::Int) = lambertw(float(x),k)
-lambertw(x::Number) = lambertw(x,0)
+
+function lambertw{T<:Integer}(x::T, k::Int)
+    if k == 0
+        x == 0 && return zero(x)
+        x == 1 && return SpecFun.omega
+    end
+    lambertw(float(x),k)
+end
 
 lambertw(::MathConst{:e}) = 1
+function lambertw(::MathConst{:e}, k::Int)
+    k == 0 && return 1
+    k == -1 && return NaN
+    error("lambertw: real x must have k == 0 or k == -1")    
+end
+    
+lambertw(x::Number) = lambertw(x,0)
+
+iscall(ex::Expr) = ex.head == :call
+isop(ex::Expr, s::Symbol) = iscall(ex) && ex.args[1] == s
+function is_x_times_fofx (ex::Expr, f::Symbol)
+    isop(ex, :*) || return false
+    a = ex.args
+    length(a) == 3 || return false
+    t = a[3]
+    isop(t, f) || return false
+    x = t.args[2]
+    x == a[2] && return x
+    return false
+end
+
+# This is an interesting toy. But there is no mechanism to
+# reduce expressions to normal forms.
+# So we don't know that exp(-1) == 1/e, etc.
+function lambertw(ex::Expr, k::Int)
+    ex == :(-pi/2) && return : (complex(0,pi/2))
+    ex == :(-1/e) && return -1
+    ex == :(exp(-1)) && return -1
+    res = is_x_times_fofx(ex,:exp)
+    res != false && return res
+    res = is_x_times_fofx(ex,:log)
+    res != false && return :(log($res))
+    :(lambertw($ex,$k))
+end
+
+lambertw(ex::Expr) = lambertw(ex,0)
 
 # These literals have more than Float64 and BigFloat 256 precision
 const omega_const_ = 0.567143290409783872999968662210355

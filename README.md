@@ -18,6 +18,55 @@ lambertw(z)     # the same as lambertw(z,0)
 
 z may be Complex or Real.
 
+Examples:
+
+```julia
+julia> lambertw(10)
+1.7455280027406994
+
+julia> lambertw(e)
+1
+
+julia> lambertw(1)
+ω = 0.5671432904097...
+
+julia> lambertw(1.0)
+0.5671432904097838
+```
+
+It's fun to handle exact expressions:
+
+```julia
+julia> lambertw(:(-1/e))
+-1
+
+julia> lambertw(:(-pi/2))   # but, we are confusing real and complex domains.
+:(complex(0,pi / 2))
+
+julia> eval(ans)
+0.0 + 1.5707963267948966im
+
+julia> lambertw( :( x * exp(x) ) )
+:x
+
+julia> lambertw( :( (a+b*z) * exp((a+b*z)) ) )
+:(a + b * z)
+
+julia> lambertw( :( (a+b*z) * log((a+b*z)) ) )
+:(log(a + b * z))
+```
+
+But, since we have no general mechanism to reduce expressions to normal form,
+this symbolic knowledge is of limited use. For instance, we don't have a rule for this:
+
+```julia
+julia> lambertw(:(pi/-2))
+:(lambertw(pi / -2,0))
+```
+
+But, in principle, for a general purpose language, Julia is very well suited for
+implementing symbolic manipulation.
+
 ### omega constant
 
 The [omega constant](http://en.wikipedia.org/wiki/Omega_constant)
