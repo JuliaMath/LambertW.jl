@@ -1,15 +1,18 @@
 # SpecFun
 
+These are a couple of mathematical functions that could be eventually
+included in some other package.
+
 ### lambertw
 
 The [Lambert W function](http://en.wikipedia.org/wiki/Lambert_W_function)
 
 ```julia
-lambert(x,0)   # real domain and range,  branch index 0
-lambert(x)     # the same as lambert(x,0)
-lambert(x,-1)  # real domain and range,  branch index -1
-lambert(z,k)   # complex domain and range,  branch index k
+lambertw(z,k)   # Lambert W function for argument z and branch index k
+lambertw(z)     # the same as lambertw(z,0)
 ```
+
+z may be Complex or Real.
 
 ### omega constant
 
@@ -28,3 +31,9 @@ julia> ω * exp(ω)
 julia> big(ω)
 5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01 with 256 bits of precision
 ```
+
+### jacobisymbol
+
+`jacobisymbol(a,n)` returns the Jacobi symbol. This is limited to bitstype integers.
+This is faster than Combinatorics.jacobisymbol for bitstype inputs, but slower for
+BigInt inputs. Thus, these methods are complementary.
