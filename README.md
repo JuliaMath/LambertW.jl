@@ -32,6 +32,9 @@ julia> lambertw(1)
 
 julia> lambertw(1.0)
 0.5671432904097838
+
+ulia> lambertw(-pi/2 + 0im)  / pi
+4.6681174759251105e-18 + 0.5im
 ```
 
 ### lambertwm1(x)
