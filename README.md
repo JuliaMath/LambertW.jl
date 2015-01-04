@@ -72,6 +72,15 @@ julia> lambertw( :( (a+b*z) * exp((a+b*z)) ) )
 
 julia> lambertw( :( (a+b*z) * log((a+b*z)) ) )
 :(log(a + b * z))
+
+julia> x = 12345678910123456789
+12345678910123456789
+
+julia> lambertw(x*exp(x))
+NaN
+
+julia> lambertw(:( $x * exp($x)))
+12345678910123456789
 ```
 
 But, since we have no general mechanism to reduce expressions to normal form,
