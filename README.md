@@ -3,6 +3,10 @@
 These are a couple of mathematical functions that could be eventually
 included in some other package.
 
+* lambertw
+* omega constant
+* jacobisymbol
+
 ### lambertw
 
 The [Lambert W function](http://en.wikipedia.org/wiki/Lambert_W_function)
