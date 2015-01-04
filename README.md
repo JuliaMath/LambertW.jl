@@ -37,7 +37,7 @@ julia> lambertw(1.0)
 ### lambertwm1(x)
 
 Lambert W function of "-1/e + x" on the branch of index -1.
-For Float64 x < 1e-7 (approximately) this is more accurate than
+For "Float64" argument x < 1e-7 (approximately) this is more accurate than
 `lambertw(-1/e+x,-1)`.
 
 ```julia
@@ -48,7 +48,7 @@ julia> lambertwm1(0)
 -1.0
 ```
 
-`lambertwm1` uses a series expansion about the pole `z=-/e`.
+`lambertwm1` uses a series expansion about the pole `z=-1/e`.
 
 ### Symbolic things
 
