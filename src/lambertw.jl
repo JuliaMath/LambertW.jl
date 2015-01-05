@@ -126,10 +126,10 @@ const omega = ω
 convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 
-# These do not seem to be more accurate, in fact, even close to branch
-# points. I doubt more terms would make a difference.
-# note that pz(z) uses the difference between numbers that are nearly equal.
 
+# note that pz(z) uses the difference between numbers that are nearly equal.
+# This is suggested in the paper. But, it is not a good idea.
+# Instead we use pzdiff below
 # Series near branch point z = -1/e
 pz(z) = -sqrt(2*(e*z+1))
 
