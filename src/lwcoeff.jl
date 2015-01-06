@@ -1,4 +1,5 @@
-export lamwcoeff, cmpbp
+export lamwcoeff, cmpbp, cmpfp, xlambertw, bigbp
+export cmpxlam,cmpexp
 
 # Testing and development for expansion about branch point
 # Refer to the paper "On the Lambert W function"
@@ -123,5 +124,20 @@ end
 function cmpbp(x,k,n)
     w1 = lambertwbp(x,k,n)
     w2 = bigbp(x,k)
+    float64(w1-w2)
+end
+
+xlambertw(x,k) = one(x) + lambertw(-one(x)/e + 1/x,k)
+
+# The following three functions are good for comparing accuracy
+# of expansion vs root finding near the bp.
+# This confirms that the crossover is still about about 1/x = 10^7
+cmpxlam(x,k) = (a=xlambertw(BigInt(x),k); (xlambertw(x,k) - a)/a)
+cmpexp(x,k) = (a=xlambertw(BigInt(x),k); (lambertwbp(1/float(x),k) -a)/a)
+cmpexp(x,k,n) = (a=xlambertw(BigInt(x),k); (lambertwbp(1/float(x),k,n) -a)/a)
+
+function cmpfp(x,k)
+    w1 = lambertw(-1/e + x,k)
+    w2 = lambertw(-1/big(e)+x,k)
     float64(w1-w2)
 end

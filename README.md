@@ -54,6 +54,10 @@ julia> lambertwbp(0)
 -0.0
 ```
 
+`z=-1/e` is a branch point of `W(z)`. For real z, W(z) on branches `k=0`
+and `k=-1` has diverging slope at the branch point.
+
+
 `lambertwm1` uses a series expansion about the branch point `z=-1/e`.
 
 ### Symbolic things
