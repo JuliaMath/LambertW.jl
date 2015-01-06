@@ -1,5 +1,6 @@
 export lamwcoeff, cmpbp
 
+# Testing and development for expansion about branch point
 # Refer to the paper "On the Lambert W function"
 
 # (4.23) and (4.24) give zero based coefficients

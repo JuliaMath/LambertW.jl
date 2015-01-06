@@ -136,10 +136,12 @@ convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 # Better to compute only necessary terms, but this
 # requires some logic. We get ps for free because
 # it is needed to compute p. The entire call
-# to lambertwbp(x,k) takes about 6 ns on my machine.
+# to lambertwbp(x,k) for three terms takes about 6 ns on my machine.
 
 # These are the coefficients μ, if I understood the paper correctly
 # But at most μ₅ is useful.
+# Might save a bit of time by omitting higher terms for small p.
+# But, we don't do this yet.
 #        -1//1         
 #         1//1         
 #        -1//3         
