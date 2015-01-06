@@ -1,4 +1,4 @@
-export lambertw, lambertwm1
+export lambertw, lambertwbp
 export ω
 export omega
 
@@ -127,20 +127,27 @@ convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 
 
-# note that pz(z) uses the difference between numbers that are nearly equal.
-# This is suggested in the paper. But, it is not a good idea.
-# Instead we use pzdiff below
-# Series near branch point z = -1/e
-pz(z) = -sqrt(2*(e*z+1))
-
-# wexp is series expansion about -1/e,  1 + W(-1/e + x)
 wser(p) = (ps = p*p;  p - ps / 3 + (11/72)*p*ps)
-wexp(x) = wser(pz(x))
+pzdiff(x) = sqrt(2*e*x)
+lambertwm1(x) = wser(-pzdiff(x))  # 1 + W(-1/e + x)  , k = -1
+lambertw0(x) = wser(pzdiff(x))    # 1 + W(-1/e + x)  , k = 0
 
+function lambertwbp{T<:Real}(x::T,k::Int)
+    k == 0 && return lambertw0(x)
+    k == -1 && return lambertwm1(x)
+    error("exansion about branch point only implemented for k = 0 and -1")
+end
+
+lambertwbp(x) = lambertwbp(x,0)
+
+# note that pz(z) uses the difference between numbers that are nearly equal.
+# This is suggested in the paper "On the Lambert W function". But, it is not a good idea.
+# Instead we use pzdiff above
+# Series near branch point z = -1/e
+#pz(z) = -sqrt(2*(e*z+1))
+# wexp is series expansion about -1/e,  1 + W(-1/e + x)
+#wexp(x) = wser(pz(x))
 # wexpdiff(z) computes lambertw(-1/e+x,-1) for small positive x
-pzdiff(x) = -sqrt(2*e*x)
-
-lambertwm1(x) = wser(pzdiff(x))
 
 ### Following is only playing with rewriting expressions.
 

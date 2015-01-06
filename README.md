@@ -37,17 +37,20 @@ ulia> lambertw(-pi/2 + 0im)  / pi
 4.6681174759251105e-18 + 0.5im
 ```
 
-### lambertwm1(x)
+### lambertwbp(x,k)
 
-`1 + W(-1/e + x)` on the  the branch of index -1.
-For "Float64" argument x < 1e-7 (approximately) this is more accurate than
-`lambertw(-1/e+x,-1)`.
+Returns `1 + W(-1/e + x)` on the  the branch of index `k`, where
+`k` must be either `0` or `-1`.
+For argument x < 1e-7 (approximately) and of type `Float64` this is more accurate than
+`lambertw(-1/e+x,k)`.
+
+`lambertwbp(x)` is equivalent to `lambertwbp(x,0)`.
 
 ```julia
-julia> lambertwm1(1e-18)
+julia> lambertwbp(1e-18,-1)
 -2.3316439834093117e-9
 
-julia> lambertwm1(0)
+julia> lambertwbp(0)
 -0.0
 ```
 
@@ -117,3 +120,10 @@ julia> big(ω)
 `jacobisymbol(a,n)` returns the Jacobi symbol. This is limited to bitstype integers.
 This is faster than Combinatorics.jacobisymbol for bitstype inputs, but slower for
 BigInt inputs. Thus, these methods are complementary.
+
+<!--  LocalWords:  SpecFun lambertw jacobisymbol julia ulia im eval
+ -->
+<!--  LocalWords:  lambertwbp lambertwm NaN bitstype Combinatorics
+ -->
+<!--  LocalWords:  BigInt
+ -->

@@ -22,4 +22,4 @@ for z in [ BigFloat(1),  BigFloat(2), complex(BigFloat(1), BigFloat(1))]
 end
 
 # test the expansion about pole for k=-1
-@test lambertwm1(1e-20) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
+@test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
