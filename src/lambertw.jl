@@ -16,6 +16,7 @@ function _lambertw{T<:Number}(z::T, x::T)
         xexz = x * ex - z
         x1 = x + 1
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
+#        x = x - 2*x1*xexz/(2*x1*x1*ex-xexz*(x1+two_t))  slower than line above
         diff = abs(lastx - x)
         diff <= eps(abs(lastx)) && break
         if lastdiff == diff
@@ -32,12 +33,12 @@ end
 # fancy initial condition does not seem to help speed.
 function lambertwk0{T<:Real}(x::T)
     one_t = one(T)
-    two_t = convert(T,2)
+    itwo_t = 1/convert(T,2)
     x < -one_t/convert(T,e) && return NaN
     if x > one_t
         lx = log(x)
         llx = log(lx)
-        x1 = lx - llx - log(one_t - llx/lx)/two_t
+        x1 = lx - llx - log(one_t - llx/lx) * itwo_t
     else
         x1 = 0.567 * x
     end
@@ -135,14 +136,14 @@ convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 # Better to compute only necessary terms, but this
 # requires some logic. We get ps for free because
 # it is needed to compute p. The entire call
-# to lambertwbp(x,k) takes about 13 ns on my machine.
+# to lambertwbp(x,k) takes about 6 ns on my machine.
 
-#wser(p,ps) = p - ps / 3 + (11/72) * p * ps
 
 function wser(p,ps)
     T = typeof(p)
     elovst = convert(T,11)/convert(T,72)  # must do this to get compiler optimization (v0.3)
-    p - (ps / 3) + elovst * p * ps
+    oo3 = one(T)/3
+    p - ps * (oo3 - elovst * p) # tuned + and -'s to get best performance. makes a big difference!
 end
 
 function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
