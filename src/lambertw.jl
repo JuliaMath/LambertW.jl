@@ -138,12 +138,29 @@ convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 # it is needed to compute p. The entire call
 # to lambertwbp(x,k) takes about 6 ns on my machine.
 
+# These are the coefficients μ, if I understood the paper correctly
+# But at most μ₅ is useful.
+#        -1//1         
+#         1//1         
+#        -1//3         
+#        11//72        
+#      -113//1080      
+#       697//17280     
+#    -17357//544320    
+#  56061201//3919892087
+#   -302441//26127360  
+# -52221490//160148323
 
 function wser(p,ps)
     T = typeof(p)
     elovst = convert(T,11)/convert(T,72)  # must do this to get compiler optimization (v0.3)
+    μ₄ = convert(T,-113//1080)
+    μ₅ = convert(T,697//17280 )
     oo3 = one(T)/3
-    p - ps * (oo3 - elovst * p) # tuned + and -'s to get best performance. makes a big difference!
+    p4 = ps*ps
+    p5 = p4 * ps
+    # tuned + and -'s to get best performance for terms 1,2,3. makes a big difference!    
+    p - ps * (oo3 - elovst * p) + μ₄ * p4 + μ₅ * p5
 end
 
 function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
