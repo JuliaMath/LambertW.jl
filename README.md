@@ -54,7 +54,7 @@ julia> lambertwbp(0)
 -0.0
 ```
 
-`lambertwm1` uses a series expansion about the pole `z=-1/e`.
+`lambertwm1` uses a series expansion about the branch point `z=-1/e`.
 
 ### Symbolic things
 
