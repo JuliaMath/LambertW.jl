@@ -1,8 +1,9 @@
 export lambertw, lambertwbp
-export ω
-export omega
+export ω, omega
 
 import Base: convert
+
+## Lambert W function
 
 # Use Halley's iterative method to find x = lambertw(z)
 # with initial point x.
@@ -104,6 +105,8 @@ end
     
 lambertw(x::Number) = lambertw(x,0)
 
+## omega constant
+
 # These literals have more than Float64 and BigFloat 256 precision
 const omega_const_ = 0.567143290409783872999968662210355
 const omega_const_bf_ = BigFloat("0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
@@ -127,14 +130,27 @@ convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 
 
-wser(p) = (ps = p*p;  p - ps / 3 + (11/72)*p*ps)
-pzdiff(x) = sqrt(2*e*x)
-lambertwm1(x) = wser(-pzdiff(x))  # 1 + W(-1/e + x)  , k = -1
-lambertw0(x) = wser(pzdiff(x))    # 1 + W(-1/e + x)  , k = 0
+## Expansion about branch point x = -1/e
+
+# Better to compute only necessary terms, but this
+# requires some logic.
+wser(p,ps) = p - ps / 3 + (11/72) * p * ps
+
+function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
+    ps = 2*e*x;
+    p = sqrt(ps)
+    wser(p,ps)
+end
+
+function _lambertwm1(x) # 1 + W(-1/e + x)  , k = -1
+    ps = 2*e*x;
+    p = -sqrt(ps)
+    wser(p,ps)
+end
 
 function lambertwbp{T<:Real}(x::T,k::Int)
-    k == 0 && return lambertw0(x)
-    k == -1 && return lambertwm1(x)
+    k == 0 && return _lambertw0(x)
+    k == -1 && return _lambertwm1(x)
     error("exansion about branch point only implemented for k = 0 and -1")
 end
 
