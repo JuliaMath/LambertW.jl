@@ -133,8 +133,17 @@ convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 ## Expansion about branch point x = -1/e
 
 # Better to compute only necessary terms, but this
-# requires some logic.
-wser(p,ps) = p - ps / 3 + (11/72) * p * ps
+# requires some logic. We get ps for free because
+# it is needed to compute p. The entire call
+# to lambertwbp(x,k) takes about 13 ns on my machine.
+
+#wser(p,ps) = p - ps / 3 + (11/72) * p * ps
+
+function wser(p,ps)
+    T = typeof(p)
+    elovst = convert(T,11)/convert(T,72)  # must do this to get compiler optimization (v0.3)
+    p - (ps / 3) + elovst * p * ps
+end
 
 function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
     ps = 2*e*x;
