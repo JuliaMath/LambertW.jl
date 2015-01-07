@@ -71,7 +71,7 @@ function lambertw(z::Complex, k::Int)
         if k == 0
             w = z
         elseif k == -1 && imag(z) == 0 && real(z) < 0
-            w = log(-real(z))
+            w = complex(log(-real(z)),1/10^7) # need offset for z ≈ -1/e.
         else
             w = log(z)
             k != 0 ? w += complex(0,k * 2 * pi) : nothing            

@@ -30,3 +30,6 @@ end
 @test_throws ErrorException lambertw(-2.0,1)
 @test lambertw(0,-1) == lambertw(0.0,-1) == -Inf
 @test lambertw(-1/e,0) == lambertw(-1/e,-1) == -1
+
+# Fails unless we offset the starting point slightly before root finding.
+@test abs(lambertw(-1.0/e  + 0im,-1)) == 1
