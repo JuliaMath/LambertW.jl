@@ -16,6 +16,9 @@
 
 @test typeof(lambertw(1)) <: FloatingPoint
 @test lambertw(1) == float(ω)
+@test lambertw(BigInt(1)) == big(ω)
+@test typeof(lambertw(BigInt(0))) == BigFloat
+@test typeof(lambertw(BigInt(3))) == BigFloat
 
 for tvals in [ (0,0,0), (complex(0,0),0,0),
               (0.0 + 0 * im ,0,0), (1.0 + 0 * im,0,0.567143290409783873) ]
@@ -33,7 +36,7 @@ for z in [ BigFloat(1),  BigFloat(2), complex(BigFloat(1), BigFloat(1))]
     @test abs(z - w * exp(w)) < BigFloat(1)^(-70)
 end
 
-# test the expansion about pole for k=-1
+# test the expansion about branch point for k=-1
 @test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
 
 # Fails unless we offset the starting point slightly before root finding.
