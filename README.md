@@ -39,7 +39,7 @@ ulia> lambertw(-pi/2 + 0im)  / pi
 Returns `1 + W(-1/e + x)` on the  the branch of index `k`, where
 `k` must be either `0` or `-1`. The relation of the
 input and output of this function to `W(x)` are chosen to minimize loss
-of precision near the branch point.
+of precision near the branch point `z=-1/e`.
 For argument x < 1e-7 (approximately) and of type `Float64` this is more accurate than
 `lambertw(-1/e+x,k)`.
 
@@ -53,11 +53,31 @@ julia> lambertwbp(0)
 -0.0
 ```
 
-`z=-1/e` is a branch point of `W(z)`. For real z, W(z) on branches `k=0`
-and `k=-1` has diverging slope at the branch point.
-
-
 `lambertwm1` uses a series expansion about the branch point `z=-1/e`.
+
+### omega constant
+
+The [omega constant](http://en.wikipedia.org/wiki/Omega_constant)
+
+```julia
+julia> ω
+ω = 0.5671432904097...
+
+julia> omega
+ω = 0.5671432904097...
+
+julia> ω * exp(ω)
+1.0
+
+julia> big(ω)
+5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01 with 256 bits of precision
+```
+
+### jacobisymbol
+
+`jacobisymbol(a,n)` returns the Jacobi symbol. This is limited to bitstype integers.
+This is faster than Combinatorics.jacobisymbol for bitstype inputs, but slower for
+BigInt inputs. Thus, these methods are complementary.
 
 ### Symbolic things
 
@@ -99,30 +119,6 @@ this symbolic knowledge is of limited use. For instance, we don't have a rule fo
 julia> lambertw(:(pi/-2))
 :(lambertw(pi / -2,0))
 ```
-
-### omega constant
-
-The [omega constant](http://en.wikipedia.org/wiki/Omega_constant)
-
-```julia
-julia> ω
-ω = 0.5671432904097...
-
-julia> omega
-ω = 0.5671432904097...
-
-julia> ω * exp(ω)
-1.0
-
-julia> big(ω)
-5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01 with 256 bits of precision
-```
-
-### jacobisymbol
-
-`jacobisymbol(a,n)` returns the Jacobi symbol. This is limited to bitstype integers.
-This is faster than Combinatorics.jacobisymbol for bitstype inputs, but slower for
-BigInt inputs. Thus, these methods are complementary.
 
 <!--  LocalWords:  SpecFun lambertw jacobisymbol julia ulia im eval
  -->
