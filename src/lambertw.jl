@@ -5,6 +5,9 @@ import Base: convert
 
 ## Lambert W function
 
+# Maybe finish implementing this later ?
+lambert_verbose() = false 
+
 # Use Halley's iterative method to find x = lambertw(z)
 # with initial point x.
 function _lambertw{T<:Number}(z::T, x::T)
@@ -18,9 +21,9 @@ function _lambertw{T<:Number}(z::T, x::T)
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
 #        x = x - 2*x1*xexz/(2*x1*x1*ex-xexz*(x1+two_t))  slower than line above
         diff = abs(lastx - x)
-        diff <= eps(abs(lastx)) && break
+        diff <= 2*eps(abs(lastx)) && break
         if lastdiff == diff
-            warn("lambertw did not converge. diff=$diff")
+            lambert_verbose() && warn("lambertw did not converge. diff=$diff")
             break
         end
         lastx = x
