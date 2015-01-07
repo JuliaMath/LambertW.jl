@@ -27,9 +27,6 @@ julia> lambertw(10)
 julia> lambertw(e)
 1
 
-julia> lambertw(1)
-ω = 0.5671432904097...
-
 julia> lambertw(1.0)
 0.5671432904097838
 
