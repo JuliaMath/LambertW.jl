@@ -35,9 +35,11 @@ end
 # Real x, k = 0
 # fancy initial condition does not seem to help speed.
 function lambertwk0{T<:Real}(x::T)
-    one_t = one(T)
-    itwo_t = 1/convert(T,2)
-    x < -one_t/convert(T,e) && return NaN
+    const one_t = one(T)    
+    const oneoe = -one_t/convert(T,e)
+    x == oneoe && return -one_t
+    const itwo_t = 1/convert(T,2)    
+    oneoe <= x || throw(DomainError())
     if x > one_t
         lx = log(x)
         llx = log(lx)
@@ -50,7 +52,11 @@ end
 
 # Real x, k = -1
 function _lambertwkm1{T<:Real}(x::T)
-    -one(T)/convert(T,e) < x < zero(T) || return NaN
+    const oneoe = -one(T)/convert(T,e)
+    x == oneoe && return -one(T)
+    oneoe <= x || throw(DomainError())
+    x == zero(T) && return -inf(T)
+    x < zero(T) || throw(DomainError())
     _lambertw(x,log(-x))
 end
 
@@ -100,13 +106,12 @@ function lambertw{T<:Integer}(x::T, k::Int)
     lambertw(float(x),k)
 end
 
-lambertw(::MathConst{:e}) = 1
+# lambertw(e + 0im,k) is ok for all k
 function lambertw(::MathConst{:e}, k::Int)
     k == 0 && return 1
-    k == -1 && return NaN
-    error("lambertw: real x must have k == 0 or k == -1")    
+    throw(DomainError())
 end
-    
+
 lambertw(x::Number) = lambertw(x,0)
 
 ## omega constant
