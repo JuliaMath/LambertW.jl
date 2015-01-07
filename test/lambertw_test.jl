@@ -9,6 +9,7 @@
 @test lambertw(complex(Inf,0),1) == complex(Inf,2pi)
 @test lambertw(complex(-Inf,0),1) == complex(Inf,3pi)
 @test lambertw(1.0) == lambertw(1.0,0)
+@test lambertw(complex(0.0,0.0,-1)) == complex(-Inf,0.0)
 
 
 for tvals in [ (0,0,0), (complex(0,0),0,0),

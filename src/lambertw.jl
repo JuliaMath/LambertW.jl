@@ -66,7 +66,7 @@ function lambertw(z::Complex, k::Int)
     if abs(z) <= one_t/convert(rT,e)
         if z == 0
             k == 0 && return z
-            return -inf(rT)
+            return complex(-inf(rT),zero(rT))
         end
         if k == 0
             w = z
