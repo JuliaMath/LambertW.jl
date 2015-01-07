@@ -16,7 +16,7 @@ lambertw(z,k)   # Lambert W function for argument z and branch index k
 lambertw(z)     # the same as lambertw(z,0)
 ```
 
-z may be Complex or Real.
+`z` may be Complex or Real. `k` must be an integer.
 
 Examples:
 
