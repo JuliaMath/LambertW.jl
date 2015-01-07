@@ -37,7 +37,7 @@ ulia> lambertw(-pi/2 + 0im)  / pi
 ### lambertwbp(x,k)
 
 Returns `1 + W(-1/e + x)` for real `x`, on the  the branch of index `k`, where
-`k` must be either `0` or `-1`. The relation of the
+`k` must be either `0` or `-1`. The relations of the
 input and output of this function to `W(x)` are chosen to minimize loss
 of precision near the branch point `z=-1/e`.
 For argument x < 1e-7 (approximately) and of type `Float64` this is more accurate than
