@@ -62,7 +62,7 @@ and `k=-1` has diverging slope at the branch point.
 
 ### Symbolic things
 
-It's fun to see exact expressions:
+This part is not serious. But, it's fun to see exact expressions:
 
 ```julia
 julia> lambertw(:(-1/e))
