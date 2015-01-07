@@ -100,8 +100,8 @@ lambertw(z::Complex{Int}, k::Int) = lambertw(float(z),k)
 
 function lambertw{T<:Integer}(x::T, k::Int)
     if k == 0
-        x == 0 && return zero(x)
-        x == 1 && return SpecFun.omega
+        x == 0 && return float(zero(x))
+        x == 1 && return float(SpecFun.omega)
     end
     lambertw(float(x),k)
 end
