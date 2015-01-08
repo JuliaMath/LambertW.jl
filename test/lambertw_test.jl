@@ -1,6 +1,6 @@
 @test_throws DomainError lambertw(-2.0,0)
 @test_throws DomainError lambertw(-2.0,-1)
-@test_throws ErrorException lambertw(-2.0,1)
+@test_throws DomainError lambertw(-2.0,1)
 @test lambertw(0,-1) == lambertw(0.0,-1) == -Inf
 @test lambertw(-1/e,0) == lambertw(-1/e,-1) == -1
 @test_throws DomainError lambertw(NaN) 

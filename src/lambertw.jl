@@ -3,13 +3,13 @@ export ω, omega
 
 import Base: convert
 
-## Lambert W function
+#### Lambert W function ####
 
 # Maybe finish implementing this later ?
 lambert_verbose() = false 
 
-# Use Halley's iterative method to find x = lambertw(z)
-# with initial point x.
+# Use Halley's root-finding method to find x = lambertw(z) with
+# initial point x.
 function _lambertw{T<:Number}(z::T, x::T)
     two_t = convert(T,2)    
     lastx = x
@@ -31,6 +31,8 @@ function _lambertw{T<:Number}(z::T, x::T)
     end
     x
 end
+
+### Real z ###
 
 # Real x, k = 0
 # fancy initial condition does not seem to help speed.
@@ -60,6 +62,24 @@ function _lambertwkm1{T<:Real}(x::T)
     _lambertw(x,log(-x))
 end
 
+function lambertw{T<:Real}(x::T, k::Int)
+    k == 0 && return lambertwk0(x)
+    k == -1 && return _lambertwkm1(x)
+    throw(DomainError())  # more informative message like below ?
+#    error("lambertw: real x must have k == 0 or k == -1")
+end
+
+function lambertw{T<:Integer}(x::T, k::Int)
+    if k == 0
+        x == 0 && return float(zero(x))
+        x == 1 && return convert(typeof(float(x)),SpecFun.omega) # must be more efficient way
+    end
+    lambertw(float(x),k)
+end
+
+### Complex z ###
+
+# choose initial value inside correct branch for root finding
 function lambertw(z::Complex, k::Int)
     rT = typeof(real(z))
     one_t = one(rT)    
@@ -90,21 +110,7 @@ function lambertw(z::Complex, k::Int)
     _lambertw(z,w)
 end
 
-function lambertw{T<:Real}(x::T, k::Int)
-    k == 0 && return lambertwk0(x)
-    k == -1 && return _lambertwkm1(x)
-    error("lambertw: real x must have k == 0 or k == -1")
-end
-
 lambertw(z::Complex{Int}, k::Int) = lambertw(float(z),k)
-
-function lambertw{T<:Integer}(x::T, k::Int)
-    if k == 0
-        x == 0 && return float(zero(x))
-        x == 1 && return convert(typeof(float(x)),SpecFun.omega) # must be more efficient way
-    end
-    lambertw(float(x),k)
-end
 
 # lambertw(e + 0im,k) is ok for all k
 function lambertw(::MathConst{:e}, k::Int)
@@ -114,7 +120,7 @@ end
 
 lambertw(x::Number) = lambertw(x,0)
 
-## omega constant
+### omega constant ###
 
 # These literals have more than Float64 and BigFloat 256 precision
 const omega_const_ = 0.567143290409783872999968662210355
@@ -139,17 +145,14 @@ convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 
 
-## Expansion about branch point x = -1/e
+### Expansion about branch point x = -1/e  ###
 
-# Better to compute only necessary terms, but this
-# requires some logic. We get ps for free because
-# it is needed to compute p. The entire call
-# to lambertwbp(x,k) for three terms takes about 6 ns on my machine.
-
-# These are the coefficients μ, if I understood the paper correctly
-# But at most μ₅ is useful.
-# Might save a bit of time by omitting higher terms for small p.
-# But, we don't do this yet.
+# Better to omit terms that don't contribute significant digits. But,
+# that requires some logic. We get ps for free because it is needed to
+# compute p. The entire call to lambertwbp(x,k) for three terms takes
+# about 6 ns on my machine.
+# These are the coefficients μ, if I understood the paper correctly.
+# But at most μ₅ is useful. So we always use fifth order.
 #        -1//1         
 #         1//1         
 #        -1//3         
@@ -161,17 +164,28 @@ convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 #   -302441//26127360  
 # -52221490//160148323
 
-function wser(p,ps)
+# const before constants slows exection
+function wser3rd(p,ps)
     T = typeof(p)
     elovst = convert(T,11)/convert(T,72)  # must do this to get compiler optimization (v0.3)
-    μ₄ = convert(T,-113//1080)
-    μ₅ = convert(T,697//17280 )
     oo3 = one(T)/3
-    p4 = ps*ps
-    p5 = p4 * ps
-    # tuned + and -'s to get best performance for terms 1,2,3. makes a big difference!    
-    p - ps * (oo3 - elovst * p) + μ₄ * p4 + μ₅ * p5
+    # tuned + and -'s to get best performance. makes a big difference!
+    p - ps * (oo3 - elovst * p)
 end
+
+# const before constants slows exection
+function wser5th(p,ps)
+    T = typeof(p)
+    elovst = convert(T,11)/convert(T,72)  # must do this to get compiler optimization (v0.3)
+    oo3 = one(T)/3
+    μ₄ = convert(T,-113)/convert(T,1080)  # don't use rational! compiler does not optimize this
+    μ₅ = convert(T,697)/convert(T,17280)
+    p - ps * (oo3 - p * (elovst + p * (μ₄ + p * μ₅)))
+end
+
+# This was made when I had some rational coefficients. Speed difference was 100x
+# Now it is 30% or so
+wser(p::Float64, ps::Float64) = p <= 1e-5 ? wser3rd(p,ps) : wser5th(p,ps)
 
 function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
     ps = 2*e*x;

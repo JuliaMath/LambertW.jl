@@ -1,8 +1,14 @@
 export lamwcoeff, cmpbp, cmpfp, xlambertw, bigbp
 export cmpxlam,cmpexp
 
-# Testing and development for expansion about branch point
-# Refer to the paper "On the Lambert W function"
+# Testing and development for expansion about branch point.  Refer to
+# the paper "On the Lambert W function".  In (4.22) coefficients μ₀
+# through μ₃ are given explicitly. Recursion relations (4.23) and
+# (4.24) for all μ are also given. This code implements the recursion
+# relations.  This code "predicts" at least one coefficient that
+# agrees with the literal value in (4.22). But, adding more terms does
+# not improve accuracy.  I don't trust the coefficients. Probably this
+# code, or the paper is wrong.
 
 # (4.23) and (4.24) give zero based coefficients
 cset(a,i,v) = a[i+1] = v
@@ -30,6 +36,9 @@ end
 # Looks like some of these may be correct.  Problem: in the paper,
 # (4.23) and (4.24), underdetermine the coefficients.  (4.24) is not
 # defined for alpha_2.
+
+# I checked derivations of (4.21) and (4.25), but did not carry this
+# through to (4.23) and (4.24)
 
 # So we plug the known value μ₂ == -1//3 for (4.22) into (4.23) and
 # solve for α₂. We get α₂ = -1/6.  Then we use the formulas
