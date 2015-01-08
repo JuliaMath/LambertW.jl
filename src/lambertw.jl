@@ -20,14 +20,14 @@ function _lambertw{T<:Number}(z::T, x::T)
         x1 = x + 1
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
 #        x = x - 2*x1*xexz/(2*x1*x1*ex-xexz*(x1+two_t))  slower than line above
-        diff = abs(lastx - x)
-        diff <= 2*eps(abs(lastx)) && break
+        xdiff = abs(lastx - x)
+        xdiff <= 2*eps(abs(lastx)) && break
         if lastdiff == diff
-            lambert_verbose() && warn("lambertw did not converge. diff=$diff")
+            lambert_verbose() && warn("lambertw did not converge. diff=$xdiff")
             break
         end
         lastx = x
-        lastdiff = diff
+        lastdiff = xdiff
     end
     x
 end
