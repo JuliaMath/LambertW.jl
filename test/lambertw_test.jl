@@ -31,6 +31,33 @@ for tvals in [ (0,0), (complex(0,0),0), (0.0,0), (complex(0.0,0),0) ]
     @test_approx_eq  lambertw(z) res
 end
 
+for (z,k) in ( (complex(1,1),2), (complex(1,1),0),(complex(.6,.6),0),
+     (complex(.6,-.6),0))
+    let w = lambertw(z,k)
+        @test abs(w*exp(w) - z) < 1e-15
+    end
+end    
+
+@test lambertw(e,0) == 1
+@test_throws DomainError lambertw(e,1)
+@test_throws DomainError lambertw(e,-1)
+
+let sp = get_bigfloat_precision()
+    set_bigfloat_precision(512)
+    @test lambertw(big(1)) == big(ω)
+    set_bigfloat_precision(sp)
+end
+
+@test lambertw(1) == ω
+@test_throws ErrorException lambertwbp(1,1)
+
+let z = 1e-3, wo = lambertwbp(z), diff = abs(-1 + wo - lambertw(z-1/e))
+#    code-coverages says we did not use the code in the let statement
+#    
+    @test 1e-9 < diff < 1e-6
+end
+    
+
 for z in [ BigFloat(1),  BigFloat(2), complex(BigFloat(1), BigFloat(1))]
     w = lambertw(z)
     @test abs(z - w * exp(w)) < BigFloat(1)^(-70)
