@@ -33,7 +33,8 @@ end
 
 for (z,k) in ( (complex(1,1),2), (complex(1,1),0),(complex(.6,.6),0),
      (complex(.6,-.6),0))
-    let w = lambertw(z,k)
+    let w
+        @test (w = lambertw(z,k) ; true)  # so code-coverage see this
         @test abs(w*exp(w) - z) < 1e-15
     end
 end    
@@ -51,16 +52,16 @@ end
 @test lambertw(1) == ω
 @test_throws ErrorException lambertwbp(1,1)
 
-let z = 1e-3, wo = lambertwbp(z), diff = abs(-1 + wo - lambertw(z-1/e))
-#    code-coverages says we did not use the code in the let statement
-#    
+let z = 1e-3, wo, diff
+    @test (wo = lambertwbp(z); diff = abs(-1 + wo - lambertw(z-1/e)); true)
     @test 1e-9 < diff < 1e-6
 end
     
-
-for z in [ BigFloat(1),  BigFloat(2), complex(BigFloat(1), BigFloat(1))]
-    w = lambertw(z)
-    @test abs(z - w * exp(w)) < BigFloat(1)^(-70)
+let w
+    for z in [ BigFloat(1),  BigFloat(2), complex(BigFloat(1), BigFloat(1))]
+        @test (w = lambertw(z); true)
+        @test abs(z - w * exp(w)) < BigFloat(1)^(-70)
+    end
 end
 
 # test the expansion about branch point for k=-1,
