@@ -55,7 +55,7 @@ function _lambertwkm1{T<:Real}(x::T)
     const oneoe = -one(T)/convert(T,e)
     x == oneoe && return -one(T)
     oneoe <= x || throw(DomainError())
-    x == zero(T) && return -inf(T)
+    x == zero(T) && return -convert(T,Inf)
     x < zero(T) || throw(DomainError())
     _lambertw(x,log(-x))
 end
@@ -66,7 +66,7 @@ function lambertw(z::Complex, k::Int)
     if abs(z) <= one_t/convert(rT,e)
         if z == 0
             k == 0 && return z
-            return complex(-inf(rT),zero(rT))
+            return complex(-convert(rT,Inf),zero(rT))
         end
         if k == 0
             w = z
@@ -79,11 +79,11 @@ function lambertw(z::Complex, k::Int)
     elseif k == 0 && imag(z) <= 0.7 && abs(z) <= 0.7
         w = abs(z+0.5) < 0.1 ? imag(z) > 0 ? complex(0.7,0.7) : complex(0.7,-0.7) : z
     else
-        if real(z) == inf(rT)
+        if real(z) == convert(rT,Inf)
             k == 0 && return z
             return z + complex(0,2*k*pi)
         end
-        real(z) == -inf(rT) && return -z + complex(0,(2*k+1)*pi)
+        real(z) == -convert(rT,Inf) && return -z + complex(0,(2*k+1)*pi)
         w = log(z)
         k != 0 ? w += complex(0, 2*k*pi) : nothing
     end
