@@ -5,7 +5,7 @@ function jacobisymbol(a::Union(Signed,Unsigned),n::Union(Signed,Unsigned))
     if n <= 0 || iseven(n) throw(DomainError()) end    
     j = 1
     if n < 0
-        m % 4 == 3  ? @flip!(j)  : nothing
+        n % 4 == 3  ? @flip!(j)  : nothing
         @flip!(n)
     end
     while a != 0
