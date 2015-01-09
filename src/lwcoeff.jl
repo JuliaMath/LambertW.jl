@@ -5,10 +5,7 @@ export cmpxlam,cmpexp
 # the paper "On the Lambert W function".  In (4.22) coefficients μ₀
 # through μ₃ are given explicitly. Recursion relations (4.23) and
 # (4.24) for all μ are also given. This code implements the recursion
-# relations.  This code "predicts" at least one coefficient that
-# agrees with the literal value in (4.22). But, adding more terms does
-# not improve accuracy.  I don't trust the coefficients. Probably this
-# code, or the paper is wrong.
+# relations.
 
 # (4.23) and (4.24) give zero based coefficients
 cset(a,i,v) = a[i+1] = v
@@ -27,30 +24,14 @@ end
 # (4.23)
 function compm(k,m,a)
     kt = convert(eltype(m),k)
-    mk = (k-1)/(k+1) *(cget(m,k-2)/2 + cget(a,k-2)/4) -
-        cget(a,k)/2 - cget(m,k-1)/(k+1)
+    mk = (kt-1)/(kt+1) *(cget(m,k-2)/2 + cget(a,k-2)/4) -
+        cget(a,k)/2 - cget(m,k-1)/(kt+1)
     cset(m,k,mk)
     mk
 end
 
-# Looks like some of these may be correct.  Problem: in the paper,
-# (4.23) and (4.24), underdetermine the coefficients.  (4.24) is not
-# defined for alpha_2.
-
-# I checked derivations of (4.21) and (4.25), but did not carry this
-# through to (4.23) and (4.24)
-
-# So we plug the known value μ₂ == -1//3 for (4.22) into (4.23) and
-# solve for α₂. We get α₂ = -1/6.  Then we use the formulas
-# as given to get μ₃ = 11/72, which agrees with (4.22) .  This gives
-# us confidence, that maybe perhaps the equations are correct for
-# further coefficients.
-
-# Compare this expansion to bigfloat computation of the exact value
-# and we find that after about μ₄, the results no longer improve.
-# the subsequent terms are small, but apparently converging to the
-# wrong value.
-
+# We plug the known value μ₂ == -1//3 for (4.22) into (4.23) and
+# solve for α₂. We get α₂ = 0.
 # compute array of coefficients μ in (4.22).
 # m[1] is μ₀
 function lamwcoeff(T::DataType, n::Int)
@@ -58,7 +39,7 @@ function lamwcoeff(T::DataType, n::Int)
     m = Array(T,n)
     cset(a,0,2)  # α₀ literal in paper
     cset(a,1,-1) # α₁ literal in paper
-    cset(a,2,-1//6) # α₂ get this by solving (4.23) for alpha_2 with values printed in paper
+    cset(a,2,0)  # α₂ get this by solving (4.23) for alpha_2 with values printed in paper    
     cset(m,0,-1) # μ₀ literal in paper
     cset(m,1,1)  # μ₁ literal in paper
     cset(m,2,-1//3) # μ₂ literal in paper, but only in (4.22)
@@ -75,6 +56,7 @@ end
 const LAMWMU_FLOAT64 = lamwcoeff(Float64,100)
 const LAMWMU_BIGRAT = lamwcoeff(Rational{BigInt},20)
 const LAMWMU_BIGFLOAT = lamwcoeff(BigFloat,100)
+const LAMWMU_RAT = lamwcoeff(Rational{Int},10)
 
 function wser{T<:AbstractArray}(p,a::T,n::Int)
     sum0 = zero(p)

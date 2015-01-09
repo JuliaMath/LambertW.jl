@@ -151,41 +151,34 @@ convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 # that requires some logic. We get ps for free because it is needed to
 # compute p. The entire call to lambertwbp(x,k) for three terms takes
 # about 6 ns on my machine.
-# These are the coefficients μ, if I understood the paper correctly.
-# But at most μ₅ is useful. So we always use fifth order.
-#        -1//1         
-#         1//1         
-#        -1//3         
-#        11//72        
-#      -113//1080      
-#       697//17280     
-#    -17357//544320    
-#  56061201//3919892087
-#   -302441//26127360  
-# -52221490//160148323
+ #        -1//1          
+ #         1//1          
+ #        -1//3          
+ #        11//72         
+ #       -43//540        
+ #       769//17280      
+ #      -221//8505       
+ #    680863//43545600   
+ #     -1963//204120     
+ # 226287557//37623398400
 
-# const before constants slows exection
-function wser3rd(p,ps)
-    T = typeof(p)
-    elovst = convert(T,11)/convert(T,72)  # must do this to get compiler optimization (v0.3)
-    oo3 = one(T)/3
-    # tuned + and -'s to get best performance. makes a big difference!
-    p - ps * (oo3 - elovst * p)
+macro convfrac(T,n,d)
+    return quote
+        convert($(esc(T)),$(esc(n))) / convert($(esc(T)),$(esc(d)))
+    end
 end
-
+      
+# Coefficients calculated by hand
 # const before constants slows exection
-function wser5th(p,ps)
+function wser(p,ps)
     T = typeof(p)
-    elovst = convert(T,11)/convert(T,72)  # must do this to get compiler optimization (v0.3)
-    oo3 = one(T)/3
-    μ₄ = convert(T,-113)/convert(T,1080)  # don't use rational! compiler does not optimize this
-    μ₅ = convert(T,697)/convert(T,17280)
-    p - ps * (oo3 - p * (elovst + p * (μ₄ + p * μ₅)))
+    μ₂ = one(T)/3   # minus mu2 !
+    μ₃ = @convfrac(T,11,72) # must make var to get compiler optimization (v0.3)
+    μ₄ = @convfrac(T,-43,540)
+    μ₅ = @convfrac(T,769,17280)
+    μ₆ = @convfrac(T,680863,43545600)
+    p - ps * (μ₂ - p * (μ₃ + p * (μ₄ + p * (μ₅ + p * μ₆))))
 end
-
-# This was made when I had some rational coefficients. Speed difference was 100x
-# Now it is 30% or so
-wser(p::Float64, ps::Float64) = p <= 1e-5 ? wser3rd(p,ps) : wser5th(p,ps)
 
 function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
     ps = 2*e*x;
@@ -206,12 +199,3 @@ function lambertwbp{T<:Real}(x::T,k::Int)
 end
 
 lambertwbp(x) = lambertwbp(x,0)
-
-# note that pz(z) uses the difference between numbers that are nearly equal.
-# This is suggested in the paper "On the Lambert W function". But, it is not a good idea.
-# Instead we use pzdiff above
-# Series near branch point z = -1/e
-#pz(z) = -sqrt(2*(e*z+1))
-# wexp is series expansion about -1/e,  1 + W(-1/e + x)
-#wexp(x) = wser(pz(x))
-# wexpdiff(z) computes lambertw(-1/e+x,-1) for small positive x
