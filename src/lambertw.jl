@@ -5,11 +5,16 @@ import Base: convert
 
 #### Lambert W function ####
 
-macro baddomain()
-    :(throw(DomainError()))
-#    :(return(NaN))
-end
+const LAMBERTW_USE_NAN = false
 
+macro baddomain()
+    if LAMBERTW_USE_NAN
+        return :(return(NaN))
+    else
+        return :(throw(DomainError()))
+    end
+end
+    
 # Maybe finish implementing this later ?
 lambert_verbose() = false 
 
