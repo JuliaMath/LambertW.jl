@@ -1,11 +1,10 @@
-# SpecFun
+# LambertW
 
-These are a couple of mathematical functions that could be eventually
-included in some other package.
+This package implements the Lambert W function and associated omega constant
 
 * lambertw
+* lambertwbp
 * omega constant
-* jacobisymbol
 
 ### lambertw
 
@@ -16,7 +15,8 @@ lambertw(z,k)   # Lambert W function for argument z and branch index k
 lambertw(z)     # the same as lambertw(z,0)
 ```
 
-`z` may be Complex or Real. `k` must be an integer.
+`z` may be Complex or Real. `k` must be an integer. For Real
+`z`, `k` must be either `0` or `-1`.
 
 Examples:
 
@@ -54,6 +54,8 @@ julia> lambertwbp(0)
 ```
 
 `lambertwbp` uses a series expansion about the branch point `z=-1/e`.
+The loss of precision in `lambertw` is closely analogous to the loss of precision
+in computing the floating point function `sqrt(1-x)` for `x` close to `1`.
 
 ### omega constant
 
@@ -72,12 +74,6 @@ julia> ω * exp(ω)
 julia> big(ω)
 5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01 with 256 bits of precision
 ```
-
-### jacobisymbol
-
-`jacobisymbol(a,n)` returns the Jacobi symbol. This is limited to bitstype integers.
-This is faster than Combinatorics.jacobisymbol for bitstype inputs, but slower for
-BigInt inputs. Thus, these methods are complementary.
 
 ### Symbolic things
 
@@ -120,9 +116,9 @@ julia> lambertw(:(pi/-2))
 :(lambertw(pi / -2,0))
 ```
 
-<!--  LocalWords:  SpecFun lambertw jacobisymbol julia ulia im eval
+<!--  LocalWords:  lambertw jacobisymbol julia ulia im eval LambertW
  -->
 <!--  LocalWords:  lambertwbp lambertwm NaN bitstype Combinatorics
  -->
-<!--  LocalWords:  BigInt
+<!--  LocalWords:  BigInt imag sqrt
  -->

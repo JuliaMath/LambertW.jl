@@ -1,5 +1,5 @@
 macro test_baddomain(expr)
-    if SpecFun.LAMBERTW_USE_NAN    
+    if LambertW.LAMBERTW_USE_NAN    
         :(@test $(esc(expr)) === NaN)
     else
         :(@test_throws DomainError $(esc(expr)))

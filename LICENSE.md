@@ -1,4 +1,4 @@
-The SpecFun.jl package is licensed under the MIT "Expat" License:
+The LambertW.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2015: John Lapeyre.
 >

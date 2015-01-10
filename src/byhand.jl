@@ -1,4 +1,4 @@
-using SpecFun
+using LambertW
 
 mu1 = 1
 mu2 = -1//3
