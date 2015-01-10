@@ -122,3 +122,9 @@ end
 # test the expansion about branch point for k=-1,
 # by comparing to exact BigFloat calculation.
 @test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
+
+## vectorization
+
+@test lambertw([0.1,0.2]) == [lambertw(0.1),lambertw(0.2)]
+@test lambertw([0.1+im ,0.2-im]) == [lambertw(0.1+im),lambertw(0.2-im)]
+@test lambertw([0.1,-0.2],[0,-1]) == [lambertw(0.1,0),lambertw(-0.2,-1)]

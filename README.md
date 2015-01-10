@@ -34,6 +34,8 @@ ulia> lambertw(-pi/2 + 0im)  / pi
 4.6681174759251105e-18 + 0.5im
 ```
 
+lambertw is vectorized, that is automatically maps over arrays.
+
 ### lambertwbp(x,k)
 
 Returns `1 + W(-1/e + z)`, for `z` satisfying `0 <= abs(z) < 1/e`,
@@ -57,6 +59,8 @@ julia> lambertwbp(0)
 The loss of precision in `lambertw` is closely analogous to the loss of precision
 in computing the floating point function `sqrt(1-x)` for `x` close to `1`.
 
+lambertwbp is vectorized, that is automatically maps over arrays.
+
 ### omega constant
 
 The [omega constant](http://en.wikipedia.org/wiki/Omega_constant)
@@ -74,6 +78,12 @@ julia> ω * exp(ω)
 julia> big(ω)
 5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01 with 256 bits of precision
 ```
+
+### Notes
+
+Both lambertw and lambertwbp throw `DomainErrors` rather than return `NaN`s.
+This behavior is reversed by setting `LAMBERTW_USE_NAN=true` at the top of
+the source file `lambertw.jl`.
 
 ### Symbolic things
 
