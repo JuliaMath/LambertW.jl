@@ -37,6 +37,7 @@ end
 # Real x, k = 0
 # fancy initial condition does not seem to help speed.
 function lambertwk0{T<:Real}(x::T)
+    x == Inf && return Inf
     const one_t = one(T)    
     const oneoe = -one_t/convert(T,e)
     x == oneoe && return -one_t

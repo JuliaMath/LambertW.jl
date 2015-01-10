@@ -1,18 +1,19 @@
 @test_throws DomainError lambertw(-2.0,0)
 @test_throws DomainError lambertw(-2.0,-1)
 @test_throws DomainError lambertw(-2.0,1)
+
 @test lambertw(0,-1) == lambertw(0.0,-1) == -Inf
 @test lambertw(-1/e,0) == lambertw(-1/e,-1) == -1
 @test_throws DomainError lambertw(NaN) 
+@test typeof(lambertw(0)) <: FloatingPoint
+@test lambertw(0) == 0
 
+@test lambertw(Inf,0) == Inf
 @test lambertw(complex(Inf,1),0) == complex(Inf,1)
 @test lambertw(complex(Inf,0),1) == complex(Inf,2pi)
 @test lambertw(complex(-Inf,0),1) == complex(Inf,3pi)
 @test lambertw(1.0) == lambertw(1.0,0)
 @test lambertw(complex(0.0,0.0),-1) == complex(-Inf,0.0)
-
-@test typeof(lambertw(0)) <: FloatingPoint
-@test lambertw(0) == 0
 
 @test typeof(lambertw(1)) <: FloatingPoint
 @test lambertw(1) == float(ω)
@@ -31,7 +32,7 @@ for tvals in [ (0,0), (complex(0,0),0), (0.0,0), (complex(0.0,0),0) ]
     @test_approx_eq  lambertw(z) res
 end
 
-for (z,k) in ( (complex(1,1),2), (complex(1,1),0),(complex(.6,.6),0),
+for (z,k) in ((complex(1,1),2), (complex(1,1),0),(complex(.6,.6),0),
      (complex(.6,-.6),0))
     let w
         @test (w = lambertw(z,k) ; true)  # so code-coverage see this
