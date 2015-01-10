@@ -36,24 +36,22 @@ ulia> lambertw(-pi/2 + 0im)  / pi
 
 ### lambertwbp(x,k)
 
-Returns `1 + W(-1/e + x)` for real `x`, on the  the branch of index `k`, where
-`k` must be either `0` or `-1`. The relations of the
-input and output of this function to `W(x)` are chosen to minimize loss
-of precision near the branch point `z=-1/e`.
-For argument x < 1e-7 (approximately) and of type `Float64` this is more accurate than
-`lambertw(-1/e+x,k)`.
+Returns `1 + W(-1/e + x)` for real `x`, satisfying `0 <= x < 1/e`,
+on the  the branch of index `k`, where `k` must be either `0` or `-1`. This
+function is designed to minimize loss of precision near the branch point `z=-1/e`.
+`lambertwbp(x,k)` converges to `Float64` precision for `x < 0.32`.
 
 `lambertwbp(x)` is equivalent to `lambertwbp(x,0)`.
 
 ```julia
-julia> lambertwbp(1e-18,-1)
--2.3316439834093117e-9
+julia> lambertwbp(1e-3,-1)
+-0.07560894118662498
 
 julia> lambertwbp(0)
 -0.0
 ```
 
-`lambertwm1` uses a series expansion about the branch point `z=-1/e`.
+`lambertwbp` uses a series expansion about the branch point `z=-1/e`.
 
 ### omega constant
 
