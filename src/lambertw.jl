@@ -19,7 +19,6 @@ function _lambertw{T<:Number}(z::T, x::T)
         xexz = x * ex - z
         x1 = x + 1
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
-#        x = x - 2*x1*xexz/(2*x1*x1*ex-xexz*(x1+two_t))  slower than line above
         xdiff = abs(lastx - x)
         xdiff <= 2*eps(abs(lastx)) && break
         if lastdiff == diff
