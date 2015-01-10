@@ -194,7 +194,7 @@ function lamwcoeff(T::DataType, n::Int)
     return m
 end
 
-const LAMWMU_FLOAT64 = lamwcoeff(Float64,300)
+const LAMWMU_FLOAT64 = lamwcoeff(Float64,500)
 
 function horner(x, p::AbstractArray,n)
     n += 1
@@ -217,7 +217,8 @@ eval(mkwser(:wser7, 7))
 eval(mkwser(:wser12, 12))
 eval(mkwser(:wser19, 19))
 eval(mkwser(:wser26, 26))
-eval(mkwser(:wser47, 47))
+eval(mkwser(:wser32, 32))
+eval(mkwser(:wser50, 50))
 eval(mkwser(:wser100, 100))
 eval(mkwser(:wser290, 290))
 
@@ -229,8 +230,8 @@ function wser(p,x)
     x < 1e-2 && return wser19(p)
     x < 3e-2 && return wser26(p)
     x < 5e-2 && return wser32(p)
-    x < 1e-1 && return wser47(p)
-    x < 2e-1 && return wser100(p)
+    x < 1e-1 && return wser50(p)
+    x < 1.9e-1 && return wser100(p)
     x > 1/e && throw(DomainError())  # radius of convergence
     return wser290(p)  # good for x approx .32
 end

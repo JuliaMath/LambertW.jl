@@ -52,9 +52,24 @@ end
 @test lambertw(1) == ω
 @test_throws ErrorException lambertwbp(1,1)
 
-let z = 1e-3, zb = BigFloat(1)/10^3,  wo, diff
-    @test (wo = lambertwbp(z); diff = abs(-1 + wo - lambertw(zb-1/big(e))); true)
-    @test diff < 1e-16
+# expansion about branch point
+let sp = get_bigfloat_precision(), z = BigFloat(1)/10^12, wo, diff
+    set_bigfloat_precision(2048)
+    for i in 1:300
+        @test (wo = lambertwbp(float64(z)); diff = abs(-1 + wo - lambertw(z-1/big(e))); true)
+        if diff > 5e-16
+            println(float64(z), " ", float64(diff))
+        end
+        @test diff < 5e-16
+        @test (wo = lambertwbp(float64(z),-1); diff = abs(-1 + wo - lambertw(z-1/big(e),-1)); true)
+        if diff > 5e-16
+            println(float64(z), " ", float64(diff))
+        end        
+        @test diff < 5e-16        
+        z  *= 1.1
+        if z > 0.23 break end
+    end
+    set_bigfloat_precision(sp)    
 end
     
 let w
@@ -68,5 +83,6 @@ end
 # by comparing to exact BigFloat calculation.
 @test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
 
+# bug fix
 # Fails unless we offset the starting point slightly before root finding.
 @test abs(lambertw(-1.0/e  + 0im,-1)) == 1
