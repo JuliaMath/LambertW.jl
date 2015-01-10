@@ -236,6 +236,20 @@ function wser(p,x)
     return wser290(p)  # good for x approx .32
 end
 
+function wser(p::Complex,z)
+    x = abs(z)
+    x < 4e-11 && return wser3(p)
+    x < 1e-5 && return wser7(p)
+    x < 1e-3 && return wser12(p)
+    x < 1e-2 && return wser19(p)
+    x < 3e-2 && return wser26(p)
+    x < 5e-2 && return wser32(p)
+    x < 1e-1 && return wser50(p)
+    x < 1.9e-1 && return wser100(p)
+    x > 1/e && throw(DomainError())  # radius of convergence
+    return wser290(p)  # good for x approx .32
+end
+
 @inline function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
     ps = 2*e*x;
     p = sqrt(ps)
@@ -248,10 +262,10 @@ end
     wser(p,x)
 end
 
-function lambertwbp{T<:Real}(x::T,k::Int)
+function lambertwbp{T<:Number}(x::T,k::Int)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
     error("exansion about branch point only implemented for k = 0 and -1")
 end
 
-lambertwbp(x) = _lambertw0(x)
+lambertwbp{T<:Number}(x::T) = _lambertw0(x)
