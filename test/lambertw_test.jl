@@ -16,8 +16,6 @@
 @test lambertw(complex(0.0,0.0),-1) == complex(-Inf,0.0)
 
 @test typeof(lambertw(1)) <: FloatingPoint
-@test lambertw(1) == float(ω)
-@test lambertw(BigInt(1)) == big(ω)
 @test typeof(lambertw(BigInt(0))) == BigFloat
 @test typeof(lambertw(BigInt(3))) == BigFloat
 
@@ -51,6 +49,10 @@ let sp = get_bigfloat_precision()
 end
 
 @test lambertw(1) == ω
+@test lambertw(1) == float(ω)
+@test float16(ω) == float16(0.5674)
+@test float32(ω) == 0.56714326f0
+@test lambertw(BigInt(1)) == big(ω)
 @test_throws ErrorException lambertwbp(1,1)
 
 # expansion about branch point

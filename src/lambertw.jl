@@ -5,6 +5,11 @@ import Base: convert
 
 #### Lambert W function ####
 
+macro baddomain()
+    :(throw(DomainError()))
+#    :(return(NaN))
+end
+
 # Maybe finish implementing this later ?
 lambert_verbose() = false 
 
@@ -41,7 +46,7 @@ function lambertwk0{T<:Real}(x::T)
     const oneoe = -one_t/convert(T,e)
     x == oneoe && return -one_t
     const itwo_t = 1/convert(T,2)    
-    oneoe <= x || throw(DomainError())
+    oneoe <= x || @baddomain()
     if x > one_t
         lx = log(x)
         llx = log(lx)
@@ -56,16 +61,16 @@ end
 function _lambertwkm1{T<:Real}(x::T)
     const oneoe = -one(T)/convert(T,e)
     x == oneoe && return -one(T)
-    oneoe <= x || throw(DomainError())
+    oneoe <= x || @baddomain()
     x == zero(T) && return -convert(T,Inf)
-    x < zero(T) || throw(DomainError())
+    x < zero(T) || @baddomain()
     _lambertw(x,log(-x))
 end
 
 function lambertw{T<:Real}(x::T, k::Int)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
-    throw(DomainError())  # more informative message like below ?
+    @baddomain()  # more informative message like below ?
 #    error("lambertw: real x must have k == 0 or k == -1")
 end
 
@@ -115,7 +120,7 @@ lambertw(z::Complex{Int}, k::Int) = lambertw(float(z),k)
 # lambertw(e + 0im,k) is ok for all k
 function lambertw(::MathConst{:e}, k::Int)
     k == 0 && return 1
-    throw(DomainError())
+    @baddomain()
 end
 
 lambertw(x::Number) = lambertw(x,0)
@@ -143,6 +148,8 @@ const ω = MathConst{:ω}()
 const omega = ω
 convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
+convert(::Type{Float32}, ::MathConst{:ω}) = float32(omega_const_)
+convert(::Type{Float16}, ::MathConst{:ω}) = float16(omega_const_)
 
 ### Expansion about branch point x = -1/e  ###
 
@@ -222,7 +229,8 @@ eval(mkwser(:wser50, 50))
 eval(mkwser(:wser100, 100))
 eval(mkwser(:wser290, 290))
 
-# Converges to Float64 precision 
+# Converges to Float64 precision
+# We could get finer tuning by separating k=0,-1 branches.
 function wser(p,x)
     x < 4e-11 && return wser3(p)
     x < 1e-5 && return wser7(p)
@@ -232,10 +240,11 @@ function wser(p,x)
     x < 5e-2 && return wser32(p)
     x < 1e-1 && return wser50(p)
     x < 1.9e-1 && return wser100(p)
-    x > 1/e && throw(DomainError())  # radius of convergence
+    x > 1/e && @baddomain()  # radius of convergence
     return wser290(p)  # good for x approx .32
 end
 
+# These may need tuning.
 function wser(p::Complex,z)
     x = abs(z)
     x < 4e-11 && return wser3(p)
@@ -246,8 +255,8 @@ function wser(p::Complex,z)
     x < 5e-2 && return wser32(p)
     x < 1e-1 && return wser50(p)
     x < 1.9e-1 && return wser100(p)
-    x > 1/e && throw(DomainError())  # radius of convergence
-    return wser290(p)  # good for x approx .32
+    x > 1/e && @baddomain()  # radius of convergence
+    return wser290(p)
 end
 
 @inline function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
