@@ -36,7 +36,7 @@ ulia> lambertw(-pi/2 + 0im)  / pi
 
 ### lambertwbp(x,k)
 
-Returns `1 + W(-1/e + z)`, satisfying `0 <= abs(z) < 1/e`,
+Returns `1 + W(-1/e + z)`, for `z` satisfying `0 <= abs(z) < 1/e`,
 on the  the branch of index `k`, where `k` must be either `0` or `-1`. This
 function is designed to minimize loss of precision near the branch point `z=-1/e`.
 `lambertwbp(z,k)` converges to `Float64` precision for `abs(z) < 0.32`.
