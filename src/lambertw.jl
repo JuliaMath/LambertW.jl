@@ -144,52 +144,107 @@ const omega = ω
 convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
 
-
 ### Expansion about branch point x = -1/e  ###
 
-# Better to omit terms that don't contribute significant digits. But,
-# that requires some logic. We get ps for free because it is needed to
-# compute p. The entire call to lambertwbp(x,k) for three terms takes
-# about 6 ns on my machine.
- #        -1//1          
- #         1//1          
- #        -1//3          
- #        11//72         
- #       -43//540        
- #       769//17280      
- #      -221//8505       
- #    680863//43545600   
- #     -1963//204120     
- # 226287557//37623398400
+#  Refer to the paper "On the Lambert W function".  In (4.22)
+# coefficients μ₀ through μ₃ are given explicitly. Recursion relations
+# (4.23) and (4.24) for all μ are also given. This code implements the
+# recursion relations.
 
-macro convfrac(T,n,d)
-    return quote
-        convert($(esc(T)),$(esc(n))) / convert($(esc(T)),$(esc(d)))
+# (4.23) and (4.24) give zero based coefficients
+cset(a,i,v) = a[i+1] = v
+cget(a,i) = a[i+1]
+
+# (4.24)
+function compa(k,m,a)
+    sum0 = zero(eltype(m))
+    for j in 2:k-1
+        sum0 += cget(m,j) * cget(m,k+1-j)
     end
-end
-      
-# Coefficients calculated by hand
-# const before constants slows exection
-function wser(p,ps)
-    T = typeof(p)
-    μ₂ = one(T)/3   # minus mu2 !
-    μ₃ = @convfrac(T,11,72) # must make var to get compiler optimization (v0.3)
-    μ₄ = @convfrac(T,-43,540)
-    μ₅ = @convfrac(T,769,17280)
-    μ₆ = @convfrac(T,680863,43545600)
-    p - ps * (μ₂ - p * (μ₃ + p * (μ₄ + p * (μ₅ + p * μ₆))))
+    cset(a,k,sum0)
+    sum0
 end
 
-function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
+# (4.23)
+function compm(k,m,a)
+    kt = convert(eltype(m),k)
+    mk = (kt-1)/(kt+1) *(cget(m,k-2)/2 + cget(a,k-2)/4) -
+        cget(a,k)/2 - cget(m,k-1)/(kt+1)
+    cset(m,k,mk)
+    mk
+end
+
+# We plug the known value μ₂ == -1//3 for (4.22) into (4.23) and
+# solve for α₂. We get α₂ = 0.
+# compute array of coefficients μ in (4.22).
+# m[1] is μ₀
+function lamwcoeff(T::DataType, n::Int)
+    a = Array(T,n)
+    m = Array(T,n)
+    cset(a,0,2)  # α₀ literal in paper
+    cset(a,1,-1) # α₁ literal in paper
+    cset(a,2,0)  # α₂ get this by solving (4.23) for alpha_2 with values printed in paper    
+    cset(m,0,-1) # μ₀ literal in paper
+    cset(m,1,1)  # μ₁ literal in paper
+    cset(m,2,-1//3) # μ₂ literal in paper, but only in (4.22)
+    for i in 3:n-1  # coeffs are zero indexed
+        compa(i,m,a)
+        compm(i,m,a)
+    end
+    return m
+end
+
+const LAMWMU_FLOAT64 = lamwcoeff(Float64,300)
+
+function horner(x, p::AbstractArray,n)
+    n += 1
+    ex = p[n]
+    for i = n-1:-1:2
+        ex = :($(p[i]) + t * $ex)
+    end
+    ex = :( t * $ex)
+    Expr(:block, :(t = $x), ex)
+end
+
+function mkwser(name, n)
+    iex = horner(:x,LAMWMU_FLOAT64,n)
+    :(function ($name)(x) $iex  end)
+end
+
+eval(mkwser(:wser3, 3))
+eval(mkwser(:wser5, 5))
+eval(mkwser(:wser7, 7))
+eval(mkwser(:wser12, 12))
+eval(mkwser(:wser19, 19))
+eval(mkwser(:wser26, 26))
+eval(mkwser(:wser47, 47))
+eval(mkwser(:wser100, 100))
+eval(mkwser(:wser290, 290))
+
+# Converges to Float64 precision 
+function wser(p,x)
+    x < 4e-11 && return wser3(p)
+    x < 1e-5 && return wser7(p)
+    x < 1e-3 && return wser12(p)
+    x < 1e-2 && return wser19(p)
+    x < 3e-2 && return wser26(p)
+    x < 5e-2 && return wser32(p)
+    x < 1e-1 && return wser47(p)
+    x < 2e-1 && return wser100(p)
+    x > 1/e && throw(DomainError())  # radius of convergence
+    return wser290(p)  # good for x approx .32
+end
+
+@inline function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
     ps = 2*e*x;
     p = sqrt(ps)
-    wser(p,ps)
+    wser(p,x)
 end
 
-function _lambertwm1(x) # 1 + W(-1/e + x)  , k = -1
+@inline function _lambertwm1(x) # 1 + W(-1/e + x)  , k = -1
     ps = 2*e*x;
     p = -sqrt(ps)
-    wser(p,ps)
+    wser(p,x)
 end
 
 function lambertwbp{T<:Real}(x::T,k::Int)
@@ -198,4 +253,4 @@ function lambertwbp{T<:Real}(x::T,k::Int)
     error("exansion about branch point only implemented for k = 0 and -1")
 end
 
-lambertwbp(x) = lambertwbp(x,0)
+lambertwbp(x) = _lambertw0(x)

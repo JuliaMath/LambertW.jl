@@ -36,19 +36,33 @@ function genmu(T::DataType, n::Int)
     a
 end
 
-mu64a = genmu(Float64,100)
-mu64b = genmu(Rational,3)
+mu64a = genmu(Float64,6)
+mu64b = genmu(Rational,6)
 mu64c = genmu(BigFloat,100)
 
 # lambertwbf with many terms
 function newlam(x)
+    a = mu64a    
     s = zero(x)
     y = sqrt(2*e*x)
-    for i in 1:length(mu64a)
-        s += y^i * mu64a[i]
+#    y = 1.0    
+    for i in 1:length(a)
+#        println("mu $(a[i])")
+        s += y^i * a[i]
     end
     s
 end
+
+function hornerlam(x)
+    a = mu64a
+    y = sqrt(2*e*x)    
+    s = zero(x)
+    for i in (length(a)):-1:1
+        s = a[i] + s * y
+    end
+    return s * y
+end
+
 
 # Test shows backward is more precise than forwards.
 function rnewlam(x)

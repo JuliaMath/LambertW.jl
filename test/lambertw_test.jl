@@ -52,9 +52,9 @@ end
 @test lambertw(1) == ω
 @test_throws ErrorException lambertwbp(1,1)
 
-let z = 1e-3, wo, diff
-    @test (wo = lambertwbp(z); diff = abs(-1 + wo - lambertw(z-1/e)); true)
-    @test 1e-9 < diff < 1e-6
+let z = 1e-3, zb = BigFloat(1)/10^3,  wo, diff
+    @test (wo = lambertwbp(z); diff = abs(-1 + wo - lambertw(zb-1/big(e))); true)
+    @test diff < 1e-16
 end
     
 let w

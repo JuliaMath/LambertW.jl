@@ -66,6 +66,7 @@ function wser{T<:AbstractArray}(p,a::T,n::Int)
     sum0
 end
 
+
 function _lambertw0(x::Float64,n) # 1 + W(-1/e + x)  , k = 0
     ps = 2*convert(typeof(x),e)*x;    
     p = sqrt(ps)
@@ -90,13 +91,13 @@ function _lambertwm1(x::BigFloat,n) # 1 + W(-1/e + x)  , k = -1
     wser(p,LAMWMU_BIGFLOAT,n)
 end
 
-function lambertwbp{T<:Real}(x::T,k::Int,n::Int)
+function alambertwbp{T<:Real}(x::T,k::Int,n::Int)
     k == 0 && return _lambertw0(x,n)
     k == -1 && return _lambertwm1(x,n)
     error("exansion about branch point only implemented for k = 0 and -1")
 end
 
-# do a big float root finding computation equivalent to lambertwbp
+# do a big float root finding computation equivalent to alambertwbp
 function bigbp(x,k)
     one(x) + lambertw(-one(x)/convert(typeof(x),e) + x, k)
 end
@@ -113,7 +114,7 @@ end
 #
 #    For smaller x, fewer coefficients are needed.
 function cmpbp(x,k,n)
-    w1 = lambertwbp(x,k,n)
+    w1 = alambertwbp(x,k,n)
     w2 = bigbp(x,k)
     float64(w1-w2)
 end
@@ -124,8 +125,8 @@ xlambertw(x,k) = one(x) + lambertw(-one(x)/e + 1/x,k)
 # of expansion vs root finding near the bp.
 # This confirms that the crossover is still about about 1/x = 10^7
 cmpxlam(x,k) = (a=xlambertw(BigInt(x),k); (xlambertw(x,k) - a)/a)
-cmpexp(x,k) = (a=xlambertw(BigInt(x),k); (lambertwbp(1/float(x),k) -a)/a)
-cmpexp(x,k,n) = (a=xlambertw(BigInt(x),k); (lambertwbp(1/float(x),k,n) -a)/a)
+cmpexp(x,k) = (a=xlambertw(BigInt(x),k); (alambertwbp(1/float(x),k) -a)/a)
+cmpexp(x,k,n) = (a=xlambertw(BigInt(x),k); (alambertwbp(1/float(x),k,n) -a)/a)
 
 function cmpfp(x,k)
     w1 = lambertw(-1/e + x,k)
