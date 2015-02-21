@@ -1,7 +1,7 @@
-export lambertw, lambertwbp
-export ω, omega
+module LambertW
 
 import Base: convert
+export lambertw, lambertwbp, ω, omega
 
 #### Lambert W function ####
 
@@ -288,3 +288,5 @@ Base.@vectorize_1arg Number lambertw
 Base.@vectorize_2arg Number lambertw
 Base.@vectorize_1arg Number lambertwbp
 Base.@vectorize_2arg Number lambertwbp
+
+end #module
