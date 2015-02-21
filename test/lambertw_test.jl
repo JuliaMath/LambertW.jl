@@ -1,5 +1,5 @@
 macro test_baddomain(expr)
-    if LambertW.LAMBERTW_USE_NAN    
+    if LambertW.LAMBERTW_USE_NAN
         :(@test $(esc(expr)) === NaN)
     else
         :(@test_throws DomainError $(esc(expr)))
@@ -24,7 +24,7 @@ end
 ### math constant, euler e
 
 # could return math const e, but this would break type stability
-@test typeof(lambertw(1)) <: FloatingPoint  
+@test typeof(lambertw(1)) <: FloatingPoint
 @test lambertw(e,0) == 1
 
 ## value at branch point where real branches meet
@@ -50,7 +50,7 @@ end
 for (z,k,res) in [ (0,0 ,0), (complex(0,0),0 ,0),
               (complex(0.0,0),0 ,0), (complex(1.0,0),0, 0.567143290409783873) ]
     @test_approx_eq  lambertw(z,k) res
-    @test_approx_eq  lambertw(z) res    
+    @test_approx_eq  lambertw(z) res
 end
 
 for (z,k) in ((complex(1,1),2), (complex(1,1),0),(complex(.6,.6),0),
@@ -111,14 +111,14 @@ let sp = get_bigfloat_precision(), z = BigFloat(1)/10^12, wo, diff
         @test (wo = lambertwbp(float64(z),-1); diff = abs(-1 + wo - lambertw(z-1/big(e),-1)); true)
         if diff > 5e-16
             println(float64(z), " ", float64(diff))
-        end        
-        @test diff < 5e-16        
+        end
+        @test diff < 5e-16
         z  *= 1.1
         if z > 0.23 break end
     end
-    set_bigfloat_precision(sp)    
+    set_bigfloat_precision(sp)
 end
-    
+
 # test the expansion about branch point for k=-1,
 # by comparing to exact BigFloat calculation.
 @test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
