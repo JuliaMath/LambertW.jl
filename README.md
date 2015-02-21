@@ -34,16 +34,16 @@ ulia> lambertw(-pi/2 + 0im)  / pi
 4.6681174759251105e-18 + 0.5im
 ```
 
-lambertw is vectorized, that is automatically maps over arrays.
+`lambertw` is vectorized, that is, it automatically maps over arrays.
 
 ### lambertwbp(x,k)
 
 Returns `1 + W(-1/e + z)`, for `z` satisfying `0 <= abs(z) < 1/e`,
-on the  the branch of index `k`, where `k` must be either `0` or `-1`. This
+on the branch of index `k`, where `k` must be either `0` or `-1`. This
 function is designed to minimize loss of precision near the branch point `z=-1/e`.
 `lambertwbp(z,k)` converges to `Float64` precision for `abs(z) < 0.32`.
 
-If `k=-1` and `imag(z) < 0`, the the value on the branch `k=1` is returned.
+If `k=-1` and `imag(z) < 0`, the value on the branch `k=1` is returned.
 
 `lambertwbp(z)` is equivalent to `lambertwbp(z,0)`.
 
@@ -59,7 +59,7 @@ julia> lambertwbp(0)
 The loss of precision in `lambertw` is closely analogous to the loss of precision
 in computing the floating point function `sqrt(1-x)` for `x` close to `1`.
 
-lambertwbp is vectorized, that is automatically maps over arrays.
+`lambertwbp` is vectorized, that is automatically maps over arrays.
 
 ### omega constant
 
@@ -81,7 +81,7 @@ julia> big(ω)
 
 ### Notes
 
-Both lambertw and lambertwbp throw `DomainErrors` rather than return `NaN`s.
+Both `lambertw` and `lambertwbp` throw `DomainErrors` rather than return `NaN`s.
 This behavior is reversed by setting `LAMBERTW_USE_NAN=true` at the top of
 the source file `lambertw.jl`.
 
