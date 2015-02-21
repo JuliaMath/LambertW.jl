@@ -279,7 +279,7 @@ end
 function lambertwbp{T<:Number}(x::T,k::Int)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
-    error("exansion about branch point only implemented for k = 0 and -1")
+    error("expansion about branch point only implemented for k = 0 and -1")
 end
 
 lambertwbp{T<:Number}(x::T) = _lambertw0(x)
