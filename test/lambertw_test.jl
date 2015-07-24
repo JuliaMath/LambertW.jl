@@ -86,8 +86,8 @@ end
 
 #@test lambertw(1) == ω
 @test lambertw(1) == float(ω)
-@test float16(ω) == float16(0.5674)
-@test float32(ω) == 0.56714326f0
+@test Float16(ω) == Float16(0.5674)
+@test Float32(ω) == 0.56714326f0
 @test lambertw(BigInt(1)) == big(ω)
 
 ###  expansion about branch point
@@ -102,15 +102,15 @@ let sp = get_bigfloat_precision(), z = BigFloat(1)/10^12, wo, diff
     set_bigfloat_precision(2048)
     for i in 1:300
         # k = 0
-        @test (wo = lambertwbp(float64(z)); diff = abs(-1 + wo - lambertw(z-1/big(e))); true)
+        @test (wo = lambertwbp(Float64(z)); diff = abs(-1 + wo - lambertw(z-1/big(e))); true)
         if diff > 5e-16
-            println(float64(z), " ", float64(diff))
+            println(Float64(z), " ", Float64(diff))
         end
         @test diff < 5e-16
         #  k = -1
-        @test (wo = lambertwbp(float64(z),-1); diff = abs(-1 + wo - lambertw(z-1/big(e),-1)); true)
+        @test (wo = lambertwbp(Float64(z),-1); diff = abs(-1 + wo - lambertw(z-1/big(e),-1)); true)
         if diff > 5e-16
-            println(float64(z), " ", float64(diff))
+            println(Float64(z), " ", Float64(diff))
         end
         @test diff < 5e-16
         z  *= 1.1

@@ -134,7 +134,7 @@ lambertw(x::Number) = lambertw(x,0)
 
 # These literals have more than Float64 and BigFloat 256 precision
 const omega_const_ = 0.567143290409783872999968662210355
-const omega_const_bf_ = BigFloat("0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
+const omega_const_bf_ = parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
 
 # maybe compute higher precision. converges very quickly
 function omega_const(::Type{BigFloat})
@@ -153,8 +153,8 @@ const ω = MathConst{:ω}()
 const omega = ω
 convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
-convert(::Type{Float32}, ::MathConst{:ω}) = float32(omega_const_)
-convert(::Type{Float16}, ::MathConst{:ω}) = float16(omega_const_)
+convert(::Type{Float32}, ::MathConst{:ω}) = Float32(omega_const_)
+convert(::Type{Float16}, ::MathConst{:ω}) = Float16(omega_const_)
 
 ### Expansion about branch point x = -1/e  ###
 
