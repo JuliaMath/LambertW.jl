@@ -123,7 +123,7 @@ end
 lambertw(z::Complex{Int}, k::Int) = lambertw(float(z),k)
 
 # lambertw(e + 0im,k) is ok for all k
-function lambertw(::MathConst{:e}, k::Int)
+function lambertw(::Irrational{:e}, k::Int)
     k == 0 && return 1
     @baddomain
 end
@@ -149,12 +149,12 @@ function omega_const(::Type{BigFloat})
     oc
 end
 
-const ω = MathConst{:ω}()
+const ω = Irrational{:ω}()
 const omega = ω
-convert(::Type{BigFloat}, ::MathConst{:ω}) = omega_const(BigFloat)
-convert(::Type{Float64}, ::MathConst{:ω}) = omega_const_
-convert(::Type{Float32}, ::MathConst{:ω}) = Float32(omega_const_)
-convert(::Type{Float16}, ::MathConst{:ω}) = Float16(omega_const_)
+convert(::Type{BigFloat}, ::Irrational{:ω}) = omega_const(BigFloat)
+convert(::Type{Float64}, ::Irrational{:ω}) = omega_const_
+convert(::Type{Float32}, ::Irrational{:ω}) = Float32(omega_const_)
+convert(::Type{Float16}, ::Irrational{:ω}) = Float16(omega_const_)
 
 ### Expansion about branch point x = -1/e  ###
 

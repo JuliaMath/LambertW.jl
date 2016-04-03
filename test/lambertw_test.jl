@@ -18,18 +18,18 @@ end
 @test_baddomain lambertw(e,-1)
 
 ## integer arguments return floating point types
-@test typeof(lambertw(0)) <: FloatingPoint
+@test typeof(lambertw(0)) <: AbstractFloat
 @test lambertw(0) == 0
 
 ### math constant, euler e
 
 # could return math const e, but this would break type stability
-@test typeof(lambertw(1)) <: FloatingPoint
+@test typeof(lambertw(1)) <: AbstractFloat
 @test lambertw(e,0) == 1
 
 ## value at branch point where real branches meet
 @test lambertw(-1/e,0) == lambertw(-1/e,-1) == -1
-@test typeof(lambertw(-1/e,0)) == typeof(lambertw(-1/e,-1)) <: FloatingPoint
+@test typeof(lambertw(-1/e,0)) == typeof(lambertw(-1/e,-1)) <: AbstractFloat
 
 ### infinite args or return values
 
