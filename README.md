@@ -84,49 +84,7 @@ julia> big(ω)
 Both `lambertw` and `lambertwbp` throw `DomainErrors` rather than return `NaN`s.
 This behavior is reversed by setting `LAMBERTW_USE_NAN=true` at the top of
 the source file `lambertw.jl`.
-
-### Symbolic things
-
-This part is not serious. But, it's fun to see exact expressions:
-
-```julia
-julia> lambertw(:(-1/e))
--1
-
-julia> lambertw(:(-pi/2))   # but, we are confusing real and complex domains.
-:(complex(0,pi / 2))
-
-julia> eval(ans)
-0.0 + 1.5707963267948966im
-
-julia> lambertw( :( x * exp(x) ) )
-:x
-
-julia> lambertw( :( (a+b*z) * exp((a+b*z)) ) )
-:(a + b * z)
-
-julia> lambertw( :( (a+b*z) * log((a+b*z)) ) )
-:(log(a + b * z))
-
-julia> x = 12345678910123456789
-12345678910123456789
-
-julia> lambertw(x*exp(x))
-NaN
-
-julia> lambertw(:( $x * exp($x)))
-12345678910123456789
-```
-
-But, since we have no general mechanism to reduce expressions to normal form,
-this symbolic knowledge is of limited use. For instance, we don't have a rule for this:
-
-```julia
-julia> lambertw(:(pi/-2))
-:(lambertw(pi / -2,0))
-```
-
-
+ 
 <!--  LocalWords:  lambertw jacobisymbol julia ulia im eval LambertW
  -->
 <!--  LocalWords:  lambertwbp lambertwm NaN bitstype Combinatorics
