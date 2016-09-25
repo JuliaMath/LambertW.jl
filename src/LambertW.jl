@@ -90,7 +90,7 @@ end
 ### Complex z ###
 
 # choose initial value inside correct branch for root finding
-function lambertw(z::Complex, k::Int)
+function lambertw{T<:Real}(z::Complex{T}, k::Int)
     rT = typeof(real(z))
     one_t = one(rT)
     if abs(z) <= one_t/convert(rT,e)
@@ -128,7 +128,7 @@ function lambertw(::Irrational{:e}, k::Int)
     @baddomain
 end
 
-lambertw(x::Number) = lambertw(x,0)
+lambertw{T<:Number}(x::T) = lambertw(x,0)
 
 ### omega constant ###
 
@@ -138,7 +138,7 @@ const omega_const_bf_ = parse(BigFloat,"0.56714329040978387299996866221035554975
 
 # maybe compute higher precision. converges very quickly
 function omega_const(::Type{BigFloat})
-    get_bigfloat_precision() <= 256 && return omega_const_bf_
+    precision(BigFloat) <= 256 && return omega_const_bf_
     myeps = eps(BigFloat)
     oc = omega_const_bf_
     for i in 1:100
@@ -250,7 +250,7 @@ function wser(p,x)
 end
 
 # These may need tuning.
-function wser(p::Complex,z)
+function wser{T<:Real}(p::Complex{T},z)
     x = abs(z)
     x < 4e-11 && return wser3(p)
     x < 1e-5 && return wser7(p)

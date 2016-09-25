@@ -78,10 +78,10 @@ end
 ###  ω constant
 
 ## get ω from recursion and compare to value from lambertw
-let sp = get_bigfloat_precision()
-    set_bigfloat_precision(512)
+let sp = precision(BigFloat)
+    setprecision(512)
     @test lambertw(big(1)) == big(ω)
-    set_bigfloat_precision(sp)
+    setprecision(sp)
 end
 
 #@test lambertw(1) == ω
@@ -98,8 +98,8 @@ end
 # Expansions about branch point converges almost to machine precision
 # except near the radius of convergence.
 # Complex args are not tested here.
-let sp = get_bigfloat_precision(), z = BigFloat(1)/10^12, wo, diff
-    set_bigfloat_precision(2048)
+let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
+    setprecision(2048)
     for i in 1:300
         # k = 0
         @test (wo = lambertwbp(Float64(z)); diff = abs(-1 + wo - lambertw(z-1/big(e))); true)
@@ -116,7 +116,7 @@ let sp = get_bigfloat_precision(), z = BigFloat(1)/10^12, wo, diff
         z  *= 1.1
         if z > 0.23 break end
     end
-    set_bigfloat_precision(sp)
+    setprecision(sp)
 end
 
 # test the expansion about branch point for k=-1,
