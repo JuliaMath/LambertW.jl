@@ -1,3 +1,5 @@
+using Compat
+
 macro test_baddomain(expr)
     if LambertW.LAMBERTW_USE_NAN
         :(@test $(esc(expr)) === NaN)
@@ -85,9 +87,9 @@ end
 
 ## get ω from recursion and compare to value from lambertw
 let sp = precision(BigFloat)
-    setprecision(512)
+  @compat  setprecision(512)
     @test lambertw(big(1)) == big(ω)
-    setprecision(sp)
+  @compat  setprecision(sp)
 end
 
 #@test lambertw(1) == ω
@@ -105,7 +107,7 @@ end
 # except near the radius of convergence.
 # Complex args are not tested here.
 let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
-    setprecision(2048)
+  @compat  setprecision(2048)
     for i in 1:300
         # k = 0
         @test (wo = lambertwbp(Float64(z)); diff = abs(-1 + wo - lambertw(z-1/big(e))); true)
@@ -122,7 +124,7 @@ let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
         z  *= 1.1
         if z > 0.23 break end
     end
-    setprecision(sp)
+ @compat  setprecision(sp)
 end
 
 # test the expansion about branch point for k=-1,

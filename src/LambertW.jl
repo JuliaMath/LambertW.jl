@@ -3,6 +3,8 @@ module LambertW
 import Base: convert
 export lambertw, lambertwbp, ω, omega
 
+using Compat
+
 #### Lambert W function ####
 
 const LAMBERTW_USE_NAN = false
@@ -138,7 +140,7 @@ const omega_const_bf_ = parse(BigFloat,"0.56714329040978387299996866221035554975
 
 # maybe compute higher precision. converges very quickly
 function omega_const(::Type{BigFloat})
-    precision(BigFloat) <= 256 && return omega_const_bf_
+  @compat  precision(BigFloat) <= 256 && return omega_const_bf_
     myeps = eps(BigFloat)
     oc = omega_const_bf_
     for i in 1:100
