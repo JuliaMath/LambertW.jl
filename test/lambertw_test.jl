@@ -47,6 +47,12 @@ end
 @test typeof(lambertw(BigInt(0))) == BigFloat
 @test typeof(lambertw(BigInt(3))) == BigFloat
 
+## Any Integer type allowed for second argument
+@test lambertw(-0.2,-1) == lambertw(-0.2,BigInt(-1))
+
+## BigInt for second arg does not promote the type
+@test typeof(lambertw(-0.2,-1)) == typeof(lambertw(-0.2,BigInt(-1)))
+
 for (z,k,res) in [ (0,0 ,0), (complex(0,0),0 ,0),
               (complex(0.0,0),0 ,0), (complex(1.0,0),0, 0.567143290409783873) ]
     @test_approx_eq  lambertw(z,k) res

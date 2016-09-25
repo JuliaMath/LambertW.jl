@@ -72,14 +72,14 @@ function _lambertwkm1{T<:Real}(x::T)
     _lambertw(x,log(-x))
 end
 
-function lambertw{T<:Real}(x::T, k::Int)
+function lambertw{T<:Real, V<:Integer}(x::T, k::V)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
     @baddomain  # more informative message like below ?
 #    error("lambertw: real x must have k == 0 or k == -1")
 end
 
-function lambertw{T<:Integer}(x::T, k::Int)
+function lambertw{T<:Integer, V<:Integer}(x::T, k::V)
     if k == 0
         x == 0 && return float(zero(x))
         x == 1 && return convert(typeof(float(x)),LambertW.omega) # must be more efficient way
@@ -90,7 +90,7 @@ end
 ### Complex z ###
 
 # choose initial value inside correct branch for root finding
-function lambertw{T<:Real}(z::Complex{T}, k::Int)
+function lambertw{T<:Real, V<:Integer}(z::Complex{T}, k::V)
     rT = typeof(real(z))
     one_t = one(rT)
     if abs(z) <= one_t/convert(rT,e)
@@ -120,10 +120,10 @@ function lambertw{T<:Real}(z::Complex{T}, k::Int)
     _lambertw(z,w)
 end
 
-lambertw(z::Complex{Int}, k::Int) = lambertw(float(z),k)
+lambertw{T<:Integer, V<:Integer}(z::Complex{T}, k::V) = lambertw(float(z),k)
 
 # lambertw(e + 0im,k) is ok for all k
-function lambertw(::Irrational{:e}, k::Int)
+function lambertw{T<:Integer}(::Irrational{:e}, k::T)
     k == 0 && return 1
     @baddomain
 end
