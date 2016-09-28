@@ -30,22 +30,20 @@ julia> lambertw(e)
 julia> lambertw(1.0)
 0.5671432904097838
 
-ulia> lambertw(-pi/2 + 0im)  / pi
+julia> lambertw(-pi/2 + 0im)  / pi
 4.6681174759251105e-18 + 0.5im
 ```
 
 `lambertw` is vectorized, that is, it automatically maps over arrays.
 
-### lambertwbp(x,k)
+### lambertwbp(x,k=0)
 
-Returns `1 + W(-1/e + z)`, for `z` satisfying `0 <= abs(z) < 1/e`,
+Return `1 + W(-1/e + z)`, for `z` satisfying `0 <= abs(z) < 1/e`,
 on the branch of index `k`, where `k` must be either `0` or `-1`. This
 function is designed to minimize loss of precision near the branch point `z=-1/e`.
 `lambertwbp(z,k)` converges to `Float64` precision for `abs(z) < 0.32`.
 
 If `k=-1` and `imag(z) < 0`, the value on the branch `k=1` is returned.
-
-`lambertwbp(z)` is equivalent to `lambertwbp(z,0)`.
 
 ```julia
 julia> lambertwbp(1e-3,-1)
@@ -56,8 +54,8 @@ julia> lambertwbp(0)
 ```
 
 `lambertwbp` uses a series expansion about the branch point `z=-1/e`.
-The loss of precision in `lambertw` is closely analogous to the loss of precision
-in computing the floating point function `sqrt(1-x)` for `x` close to `1`.
+The loss of precision in `lambertw` is analogous to the loss of precision
+in computing the `sqrt(1-x)` for `x` close to `1`.
 
 `lambertwbp` is vectorized, that is automatically maps over arrays.
 

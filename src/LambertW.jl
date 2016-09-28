@@ -74,6 +74,37 @@ function _lambertwkm1{T<:Real}(x::T)
     _lambertw(x,log(-x))
 end
 
+
+"""
+    lambertw{T<:Real, V<:Integer}(z::Complex{T}, k::V=0)
+    lambertw{T<:Real, V<:Integer}(z::T, k::V=0)
+
+Compute the `k`th branch of the Lambert W function of `z`. If `z` is real, `k` must be
+either `0` or `-1`. For `Real` `z`, the domain of the branch `k = -1` is `[-1/e,0]` and the
+domain of the branch `k = 0` is `[-1/e,Inf]`. For `Complex` `z`, and all `k`, the domain is
+the complex plane.
+
+```jldoctest
+julia> lambertw(-1/e,-1)
+-1.0
+
+julia> lambertw(-1/e,0)
+-1.0
+
+julia> lambertw(0,0)
+0.0
+
+julia> lambertw(0,-1)
+-Inf
+
+julia> lambertw(Complex(-10.0,3.0), 4)
+-0.9274337508660128 + 26.37693445371142im
+```
+
+!!! note
+    The constant `LAMBERTW_USE_NAN` at the top of the source file controls whether arguments
+    outside the domain throw `DomainError` or return `NaN`. The default is `DomainError`.
+""" 
 function lambertw{T<:Real, V<:Integer}(x::T, k::V)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
@@ -150,6 +181,28 @@ function omega_const(::Type{BigFloat})
     end
     oc
 end
+
+doc"""
+    omega
+    ω
+
+A constant defined by `ω exp(ω) = 1`.
+
+```jldoctest
+julia> ω
+ω = 0.5671432904097...
+
+julia> omega
+ω = 0.5671432904097...
+
+julia> ω * exp(ω)
+1.0
+
+julia> big(omega)
+5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01
+```
+"""
+omega,ω
 
 const ω = Irrational{:ω}()
 const omega = ω
@@ -278,6 +331,28 @@ end
     wser(p,x)
 end
 
+"""
+    lambertwbp(z,k=0)
+
+Return `1 + W(-1/e + z)`, for `abs(z)` in `[0,1/e]` for `k` either `0` or `-1`. This function is
+designed to minimize loss of precision near the branch point `z=-1/e` and
+converges to `Float64` precision for `abs(z) < 0.32`.
+
+If `k=-1` and `imag(z) < 0`, the value on the branch `k=1` is returned.
+
+```julia
+julia> lambertwbp(1e-3,-1)
+-0.07560894118662498
+
+julia> lambertwbp(0)
+-0.0
+```
+
+!!! note
+    `lambertwbp` uses a series expansion about the branch point `z=-1/e`.
+    The loss of precision in `lambertw` is analogous to the loss of precision
+    in computing the `sqrt(1-x)` for `x` close to `1`.
+"""
 function lambertwbp{T<:Number}(x::T,k::Int)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
