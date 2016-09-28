@@ -202,10 +202,31 @@ julia> big(omega)
 5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01
 ```
 """
-omega,ω
-
 const ω = Irrational{:ω}()
+
+# Repeat the documentation because v0.4 apparently does not allow ω, omega.
+doc"""
+    omega
+    ω
+
+A constant defined by `ω exp(ω) = 1`.
+
+```jldoctest
+julia> ω
+ω = 0.5671432904097...
+
+julia> omega
+ω = 0.5671432904097...
+
+julia> ω * exp(ω)
+1.0
+
+julia> big(omega)
+5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01
+```
+"""
 const omega = ω
+
 convert(::Type{BigFloat}, ::Irrational{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::Irrational{:ω}) = omega_const_
 convert(::Type{Float32}, ::Irrational{:ω}) = Float32(omega_const_)
