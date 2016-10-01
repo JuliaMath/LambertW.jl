@@ -104,7 +104,7 @@ julia> lambertw(Complex(-10.0,3.0), 4)
 !!! note
     The constant `LAMBERTW_USE_NAN` at the top of the source file controls whether arguments
     outside the domain throw `DomainError` or return `NaN`. The default is `DomainError`.
-""" 
+"""
 function lambertw{T<:Real, V<:Integer}(x::T, k::V)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)

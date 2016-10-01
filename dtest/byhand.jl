@@ -18,13 +18,13 @@ function muterm(n,a)
     sum2 = zero(T)
     for j in 2:n
         sum2 += a[j] * a[n+2-j]
-#        println("sum2 $sum2")        
+#        println("sum2 $sum2")
     end
     sum2 *= -(n+2)
-#    println("  * sum2 $sum2")    
+#    println("  * sum2 $sum2")
     a[n+1] = (-2*a[n] + sum1 + sum2)/(2*(n+2))
 end
-    
+
 function genmu(T::DataType, n::Int)
     a = Array(T,n)
     a[1] =  one(T)
@@ -42,10 +42,10 @@ mu64c = genmu(BigFloat,100)
 
 # lambertwbf with many terms
 function newlam(x)
-    a = mu64a    
+    a = mu64a
     s = zero(x)
     y = sqrt(2*e*x)
-#    y = 1.0    
+#    y = 1.0
     for i in 1:length(a)
 #        println("mu $(a[i])")
         s += y^i * a[i]
@@ -55,7 +55,7 @@ end
 
 function hornerlam(x)
     a = mu64a
-    y = sqrt(2*e*x)    
+    y = sqrt(2*e*x)
     s = zero(x)
     for i in (length(a)):-1:1
         s = a[i] + s * y

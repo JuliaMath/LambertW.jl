@@ -39,7 +39,7 @@ function lamwcoeff(T::DataType, n::Int)
     m = Array(T,n)
     cset(a,0,2)  # α₀ literal in paper
     cset(a,1,-1) # α₁ literal in paper
-    cset(a,2,0)  # α₂ get this by solving (4.23) for alpha_2 with values printed in paper    
+    cset(a,2,0)  # α₂ get this by solving (4.23) for alpha_2 with values printed in paper
     cset(m,0,-1) # μ₀ literal in paper
     cset(m,1,1)  # μ₁ literal in paper
     cset(m,2,-1//3) # μ₂ literal in paper, but only in (4.22)
@@ -68,7 +68,7 @@ end
 
 
 function _lambertw0(x::Float64,n) # 1 + W(-1/e + x)  , k = 0
-    ps = 2*convert(typeof(x),e)*x;    
+    ps = 2*convert(typeof(x),e)*x;
     p = sqrt(ps)
     wser(p,LAMWMU_FLOAT64,n)
 end
@@ -109,7 +109,7 @@ end
 # The result is that n > 5 no longer changes the result in the best case.
 # Note that radius of convergence is reported to be sqrt(2), we are well within this.
 # So, it makes sense to include these terms, but no more:
-#    μ₄ = -113//1080      
+#    μ₄ = -113//1080
 #    μ₅ =  697//17280
 #
 #    For smaller x, fewer coefficients are needed.

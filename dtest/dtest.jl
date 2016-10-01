@@ -17,7 +17,7 @@ mbig(z::Complex) = complex(BigFloat(real(z)),BigFloat(imag(z)))
 # compare lambertw to bigfloat version
 function bigcomp(z,k)
     zr = eval(parse(z))
-    zb = deepbigfloat(z)    
+    zb = deepbigfloat(z)
     wb = lambertw(zb,k)
     w = lambertw(zr,k)
     -log10(convert(Float64,abs(wb-w)))
