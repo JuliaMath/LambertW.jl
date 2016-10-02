@@ -1,10 +1,13 @@
 # LambertW
+### Lambert W function and associated omega constant
 
-This package implements the Lambert W function and associated omega constant
+[![Build Status](https://travis-ci.org/JuliaLang/LambertW.jl.svg)](https://travis-ci.org/JuliaLang/LambertW.jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/2sfomjwl29k6y6oy)](https://ci.appveyor.com/project/staticfloat/json-jl)
+[![codecov.io](http://codecov.io/github/JuliaLang/LambertW.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaLang/LambertW.jl?branch=master)
 
-* lambertw
-* lambertwbp
-* omega constant
+[![LambertW](http://pkg.julialang.org/badges/LambertW_0.4.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.4)
+[![LambertW](http://pkg.julialang.org/badges/LambertW_0.5.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.5)
+[![LambertW](http://pkg.julialang.org/badges/LambertW_0.6.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.6)
 
 ### lambertw
 
