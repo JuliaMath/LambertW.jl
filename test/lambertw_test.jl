@@ -56,9 +56,14 @@ end
 @test typeof(lambertw(-0.2,-1)) == typeof(lambertw(-0.2,BigInt(-1)))
 
 for (z,k,res) in [ (0,0 ,0), (complex(0,0),0 ,0),
-              (complex(0.0,0),0 ,0), (complex(1.0,0),0, 0.567143290409783873) ]
-    @test_approx_eq  lambertw(z,k) res
-    @test_approx_eq  lambertw(z) res
+                   (complex(0.0,0),0 ,0), (complex(1.0,0),0, 0.567143290409783873) ]
+    if Int != Int32
+        @test_approx_eq  lambertw(z,k) res
+        @test_approx_eq  lambertw(z) res
+    else
+        @test_approx_eq  lambertw(z,k) res 1e-14
+        @test_approx_eq  lambertw(z) res 1e-14
+    end
 end
 
 for (z,k) in ((complex(1,1),2), (complex(1,1),0),(complex(.6,.6),0),
