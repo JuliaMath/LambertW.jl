@@ -114,6 +114,9 @@ end
 # Expansions about branch point converges almost to machine precision
 # except near the radius of convergence.
 # Complex args are not tested here.
+
+if Int != Int32
+
 let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
   @compat  setprecision(2048)
     for i in 1:300
@@ -134,11 +137,14 @@ let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
     end
  @compat  setprecision(sp)
 end
-
+    
 # test the expansion about branch point for k=-1,
 # by comparing to exact BigFloat calculation.
 @test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
 
+
+end    
+    
 ## vectorization
 
 @test lambertw([0.1,0.2]) == [lambertw(0.1),lambertw(0.2)]
