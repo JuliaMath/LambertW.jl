@@ -80,7 +80,7 @@ end
 if Int != Int32
     @test abs(lambertw(-1.0/e  + 0im,-1)) == 1
 else
-    @test abs(lambertw(-1.0/e  + 0im,-1) + 1) < 1e-14
+    @test abs(lambertw(-1.0/e  + 0im,-1) + 1) < 1e-8
 end
 # lambertw for BigFloat is more precise than Float64. Note
 # that 70 digits in test is about 35 digits in W
