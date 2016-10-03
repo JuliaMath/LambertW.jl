@@ -74,6 +74,10 @@ for (z,k) in ((complex(1,1),2), (complex(1,1),0),(complex(.6,.6),0),
     end
 end
 
+@test abs(lambertw(complex(-3.0,-4.0),0) - Complex(1.075073066569255, -1.3251023817343588)) < 1e-14
+@test abs(lambertw(complex(-3.0,-4.0),1) - Complex(0.5887666813694675, 2.7118802109452247)) < 1e-14
+@test (lambertw(complex(.3,.3),0); true)
+
 # bug fix
 # The routine will start at -1/e + eps * im, rather than -1/e + 0im,
 # otherwise root finding will fail
@@ -111,6 +115,8 @@ end
 # not a domain error, but not implemented
 @test_throws ErrorException lambertwbp(1,1)
 
+@test_throws DomainError lambertw(.3,2)
+
 # Expansions about branch point converges almost to machine precision
 # except near the radius of convergence.
 # Complex args are not tested here.
@@ -142,6 +148,7 @@ end
 # by comparing to exact BigFloat calculation.
 @test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
 
+@test abs(lambertwbp(Complex(.01,.01),-1) - Complex(-0.2755038208041206, -0.1277888928494641)) < 1e-14
 
 end    
     

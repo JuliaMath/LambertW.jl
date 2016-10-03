@@ -18,7 +18,7 @@ macro baddomain()
 end
 
 # Maybe finish implementing this later ?
-lambert_verbose() = false
+#lambert_verbose() = false
 
 # Use Halley's root-finding method to find x = lambertw(z) with
 # initial point x.
@@ -34,7 +34,7 @@ function _lambertw{T<:Number}(z::T, x::T)
         xdiff = abs(lastx - x)
         xdiff <= 2*eps(abs(lastx)) && break
         if lastdiff == diff
-            lambert_verbose() && warn("lambertw did not converge. diff=$xdiff")
+#            lambert_verbose() && warn("lambertw did not converge. diff=$xdiff")
             break
         end
         lastx = x
@@ -82,7 +82,7 @@ end
 Compute the `k`th branch of the Lambert W function of `z`. If `z` is real, `k` must be
 either `0` or `-1`. For `Real` `z`, the domain of the branch `k = -1` is `[-1/e,0]` and the
 domain of the branch `k = 0` is `[-1/e,Inf]`. For `Complex` `z`, and all `k`, the domain is
-the complex plane.
+the complex plane. `lambertw` is vectorized.
 
 ```jldoctest
 julia> lambertw(-1/e,-1)
@@ -357,7 +357,7 @@ end
 
 Accurate value of `1 + W(-1/e + z)`, for `abs(z)` in `[0,1/e]` for `k` either `0` or `-1`.
 Accurate to Float64 precision for abs(z) < 0.32.
-If `k=-1` and `imag(z) < 0`, the value on the branch `k=1` is returned.
+If `k=-1` and `imag(z) < 0`, the value on the branch `k=1` is returned. `lambertwbp` is vectorized.
 
 ```jldoctest
 julia> lambertw(-1/e + 1e-18, -1)
