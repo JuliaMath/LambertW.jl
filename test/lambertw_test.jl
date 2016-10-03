@@ -77,8 +77,11 @@ end
 # bug fix
 # The routine will start at -1/e + eps * im, rather than -1/e + 0im,
 # otherwise root finding will fail
-@test abs(lambertw(-1.0/e  + 0im,-1)) == 1
-
+if Int != Int32
+    @test abs(lambertw(-1.0/e  + 0im,-1)) == 1
+else
+    @test abs(lambertw(-1.0/e  + 0im,-1) - 1) < 1e-14
+end
 # lambertw for BigFloat is more precise than Float64. Note
 # that 70 digits in test is about 35 digits in W
 let W
