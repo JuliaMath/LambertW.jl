@@ -61,8 +61,8 @@ for (z,k,res) in [ (0,0 ,0), (complex(0,0),0 ,0),
         @test_approx_eq  lambertw(z,k) res
         @test_approx_eq  lambertw(z) res
     else
-        @test_approx_eq  lambertw(z,k) res 1e-14
-        @test_approx_eq  lambertw(z) res 1e-14
+        @test_approx_eq_eps  lambertw(z,k) res 1e-14
+        @test_approx_eq_eps  lambertw(z) res 1e-14
     end
 end
 
