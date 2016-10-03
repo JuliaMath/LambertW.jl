@@ -2,7 +2,7 @@
 
 iscall(ex::Expr) = ex.head == :call
 isop(ex::Expr, s::Symbol) = iscall(ex) && ex.args[1] == s
-function is_x_times_fofx (ex::Expr, f::Symbol)
+function is_x_times_fofx(ex::Expr, f::Symbol)
     isop(ex, :*) || return false
     a = ex.args
     length(a) == 3 || return false
