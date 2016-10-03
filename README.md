@@ -2,6 +2,9 @@
 ### Lambert W function and associated omega constant
 
 Linux, OSX: [![Build Status](https://travis-ci.org/jlapeyre/LambertW.jl.svg)](https://travis-ci.org/jlapeyre/LambertW.jl)
+&nbsp;
+Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jlapeyre/LambertW.jl?branch=master&svg=true)](https://ci.appveyor.com/project/jlapeyre/lambertw-jl)
+&nbsp; &nbsp; &nbsp;
 [![Coverage Status](https://coveralls.io/repos/jlapeyre/LambertW.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/jlapeyre/LambertW.jl?branch=master)
 [![codecov.io](http://codecov.io/github/jlapeyre/LambertW.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/LambertW.jl?branch=master)
 
