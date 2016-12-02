@@ -40,7 +40,8 @@ julia> lambertw(-pi/2 + 0im)  / pi
 4.6681174759251105e-18 + 0.5im
 ```
 
-`lambertw` is vectorized, that is, it automatically maps over arrays.
+For Julia v0.4, `lambertw` is vectorized, that is, it automatically maps over arrays.
+For later versions, use that standard notation: `lambertw.(...)`.
 
 ### lambertwbp(x,k=0)
 
@@ -63,7 +64,8 @@ julia> lambertwbp(0)
 The loss of precision in `lambertw` is analogous to the loss of precision
 in computing the `sqrt(1-x)` for `x` close to `1`.
 
-`lambertwbp` is vectorized, that is automatically maps over arrays.
+For Julia v0.4, `lambertwbp` is vectorized, that is automatically maps over arrays. For later versions,
+use that standard notation: `lambertwp.(...)`.
 
 ### omega constant
 
