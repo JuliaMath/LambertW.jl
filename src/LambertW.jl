@@ -1,5 +1,5 @@
 # with precompilation, tests cause segfault somehow due to BigFloat
-# VERSION >= v"0.4.0-dev+6521" && __precompile__()
+#VERSION >= v"0.4.0-dev+6521" && __precompile__()
 
 module LambertW
 
@@ -387,9 +387,39 @@ end
 
 lambertwbp{T<:Number}(x::T) = _lambertw0(x)
 
-Base.@vectorize_1arg Number lambertw
-Base.@vectorize_2arg Number lambertw
-Base.@vectorize_1arg Number lambertwbp
-Base.@vectorize_2arg Number lambertwbp
+
+
+macro myvectorize_1arg(S,f)
+    S = esc(S); f = esc(f); T = esc(:T)
+    quote
+        ($f){$T<:$S}(x::AbstractArray{$T,1}) = [ ($f)(x[i]) for i=1:length(x) ]
+        ($f){$T<:$S}(x::AbstractArray{$T,2}) =
+            [ ($f)(x[i,j]) for i=1:size(x,1), j=1:size(x,2) ]
+        ($f){$T<:$S}(x::AbstractArray{$T}) =
+            reshape([ ($f)(x[i]) for i in eachindex(x) ], size(x))
+    end
+end
+
+macro myvectorize_2arg(S,f)
+    S = esc(S); f = esc(f); T1 = esc(:T1); T2 = esc(:T2)
+    quote
+        ($f){$T1<:$S, $T2<:$S}(x::($T1), y::AbstractArray{$T2}) =
+            reshape([ ($f)(x, y[i]) for i in eachindex(y) ], size(y))
+        ($f){$T1<:$S, $T2<:$S}(x::AbstractArray{$T1}, y::($T2)) =
+            reshape([ ($f)(x[i], y) for i in eachindex(x) ], size(x))
+
+        function ($f){$T1<:$S, $T2<:$S}(x::AbstractArray{$T1}, y::AbstractArray{$T2})
+            shp = promote_shape(size(x),size(y))
+            reshape([ ($f)(x[i], y[i]) for i in eachindex(x,y) ], shp)
+        end
+    end
+end
+
+if VERSION < v"0.5"
+@myvectorize_1arg Number lambertw
+@myvectorize_2arg Number lambertw
+@myvectorize_1arg Number lambertwbp
+@myvectorize_2arg Number lambertwbp
+end
 
 end #module
