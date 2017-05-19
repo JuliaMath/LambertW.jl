@@ -14,7 +14,8 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jla
 
 ### lambertw
 
-The [Lambert W function](http://en.wikipedia.org/wiki/Lambert_W_function)
+The [Lambert W function](http://en.wikipedia.org/wiki/Lambert_W_function),
+also called the omega function or product logarithm.
 
 ```julia
 lambertw(z,k)   # Lambert W function for argument z and branch index k
