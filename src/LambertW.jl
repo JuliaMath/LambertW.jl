@@ -164,7 +164,12 @@ function lambertw{T<:Integer}(::Irrational{:e}, k::T)
     @baddomain
 end
 
+# Maybe this should return a float
+lambertw(::Irrational{:e}) = 1
+
 lambertw{T<:Number}(x::T) = lambertw(x,0)
+
+lambertw(n::Irrational, args::Integer...) = lambertw(float(n),args...)
 
 ### omega constant ###
 

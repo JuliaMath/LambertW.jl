@@ -33,6 +33,11 @@ end
 @test lambertw(-1/e,0) == lambertw(-1/e,-1) == -1
 @test typeof(lambertw(-1/e,0)) == typeof(lambertw(-1/e,-1)) <: AbstractFloat
 
+## convert irrationals to float
+
+@test_approx_eq lambertw(pi) 1.0736581947961492
+@test_approx_eq lambertw(pi,0) 1.0736581947961492
+
 ### infinite args or return values
 
 @test lambertw(0,-1) == lambertw(0.0,-1) == -Inf
