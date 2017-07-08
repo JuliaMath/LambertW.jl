@@ -28,7 +28,7 @@ end
 function _lambertw{T<:Number}(z::T, x::T)
     two_t = convert(T,2)
     lastx = x
-    lastdiff = 0.0
+    lastdiff = zero(T)
     for i in 1:100
         ex = exp(x)
         xexz = x * ex - z
@@ -36,10 +36,7 @@ function _lambertw{T<:Number}(z::T, x::T)
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
         xdiff = abs(lastx - x)
         xdiff <= 2*eps(abs(lastx)) && break
-        if lastdiff == diff
-#            lambert_verbose() && warn("lambertw did not converge. diff=$xdiff")
-            break
-        end
+        lastdiff == diff && break        
         lastx = x
         lastdiff = xdiff
     end
@@ -108,14 +105,16 @@ julia> lambertw(Complex(-10.0,3.0), 4)
     The constant `LAMBERTW_USE_NAN` at the top of the source file controls whether arguments
     outside the domain throw `DomainError` or return `NaN`. The default is `DomainError`.
 """
-function lambertw{T<:Real, V<:Integer}(x::T, k::V)
+#function lambertw{T<:Real, V<:Integer}(x::T, k::V)
+function lambertw(x::Real, k::Integer)    
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
     @baddomain  # more informative message like below ?
 #    error("lambertw: real x must have k == 0 or k == -1")
 end
 
-function lambertw{T<:Integer, V<:Integer}(x::T, k::V)
+#function lambertw{T<:Integer, V<:Integer}(x::T, k::V)
+function lambertw(x::Integer, k::Integer)    
     if k == 0
         x == 0 && return float(zero(x))
         x == 1 && return convert(typeof(float(x)),LambertW.omega) # must be more efficient way
@@ -126,9 +125,10 @@ end
 ### Complex z ###
 
 # choose initial value inside correct branch for root finding
-function lambertw{T<:Real, V<:Integer}(z::Complex{T}, k::V)
+function lambertw{T<:Real}(z::Complex{T}, k::Integer)
     rT = typeof(real(z))
     one_t = one(rT)
+    local w::Complex{T}
     if abs(z) <= one_t/convert(rT,e)
         if z == 0
             k == 0 && return z
@@ -142,7 +142,7 @@ function lambertw{T<:Real, V<:Integer}(z::Complex{T}, k::V)
             w = log(z)
             k != 0 ? w += complex(0,k * 2 * pi) : nothing
         end
-    elseif k == 0 && imag(z) <= 0.7 && abs(z) <= 0.7
+    elseif k == 0 && imag(z) <= 0.7 && abs(z) <= 0.7  # We probably do not need to worry about type because this is only a seed value.
         w = abs(z+0.5) < 0.1 ? imag(z) > 0 ? complex(0.7,0.7) : complex(0.7,-0.7) : z
     else
         if real(z) == convert(rT,Inf)
@@ -156,7 +156,7 @@ function lambertw{T<:Real, V<:Integer}(z::Complex{T}, k::V)
     _lambertw(z,w)
 end
 
-lambertw{T<:Integer, V<:Integer}(z::Complex{T}, k::V) = lambertw(float(z),k)
+lambertw{T<:Integer}(z::Complex{T}, k::Integer) = lambertw(float(z),k)
 
 # lambertw(e + 0im,k) is ok for all k
 function lambertw{T<:Integer}(::Irrational{:e}, k::T)
@@ -167,7 +167,8 @@ end
 # Maybe this should return a float
 lambertw(::Irrational{:e}) = 1
 
-lambertw{T<:Number}(x::T) = lambertw(x,0)
+#lambertw{T<:Number}(x::T) = lambertw(x,0)
+lambertw(x::Number) = lambertw(x,0)
 
 lambertw(n::Irrational, args::Integer...) = lambertw(float(n),args...)
 
@@ -384,13 +385,13 @@ julia> convert(Float64,(lambertw(-BigFloat(1)/e + BigFloat(10)^(-18),-1) + 1))
     The loss of precision in `lambertw` is analogous to the loss of precision
     in computing the `sqrt(1-x)` for `x` close to `1`.
 """
-function lambertwbp{T<:Number}(x::T,k::Int)
+function lambertwbp(x::Number,k::Int)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
     error("expansion about branch point only implemented for k = 0 and -1")
 end
 
-lambertwbp{T<:Number}(x::T) = _lambertw0(x)
+lambertwbp(x::Number) = _lambertw0(x)
 
 
 
