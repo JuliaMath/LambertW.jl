@@ -28,7 +28,7 @@ end
 function _lambertw{T<:Number}(z::T, x::T)
     two_t = convert(T,2)
     lastx = x
-    lastdiff = 0.0
+    lastdiff = zero(T)
     for i in 1:100
         ex = exp(x)
         xexz = x * ex - z
