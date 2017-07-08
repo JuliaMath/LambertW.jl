@@ -36,10 +36,7 @@ function _lambertw{T<:Number}(z::T, x::T)
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
         xdiff = abs(lastx - x)
         xdiff <= 2*eps(abs(lastx)) && break
-        if lastdiff == diff
-#            lambert_verbose() && warn("lambertw did not converge. diff=$xdiff")
-            break
-        end
+        lastdiff == diff && break        
         lastx = x
         lastdiff = xdiff
     end
