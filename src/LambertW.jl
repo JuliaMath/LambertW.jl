@@ -128,6 +128,7 @@ end
 function lambertw{T<:Real}(z::Complex{T}, k::Integer)
     rT = typeof(real(z))
     one_t = one(rT)
+    local w::Complex{T}
     if abs(z) <= one_t/convert(rT,e)
         if z == 0
             k == 0 && return z
@@ -141,7 +142,7 @@ function lambertw{T<:Real}(z::Complex{T}, k::Integer)
             w = log(z)
             k != 0 ? w += complex(0,k * 2 * pi) : nothing
         end
-    elseif k == 0 && imag(z) <= 0.7 && abs(z) <= 0.7
+    elseif k == 0 && imag(z) <= 0.7 && abs(z) <= 0.7  # We probably do not need to worry about type because this is only a seed value.
         w = abs(z+0.5) < 0.1 ? imag(z) > 0 ? complex(0.7,0.7) : complex(0.7,-0.7) : z
     else
         if real(z) == convert(rT,Inf)
