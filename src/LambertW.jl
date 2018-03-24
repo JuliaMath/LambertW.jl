@@ -1,5 +1,4 @@
-# with precompilation, tests cause segfault somehow due to BigFloat
-#VERSION >= v"0.4.0-dev+6521" && __precompile__()
+__precompile__()
 
 module LambertW
 
@@ -7,6 +6,11 @@ import Base: convert
 export lambertw, lambertwbp, ω, omega
 
 using Compat
+
+function __init__()
+    global const omega_const_bf_ =
+        parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
+end
 
 #### Lambert W function ####
 
@@ -36,7 +40,7 @@ function _lambertw{T<:Number}(z::T, x::T)
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
         xdiff = abs(lastx - x)
         xdiff <= 2*eps(abs(lastx)) && break
-        lastdiff == diff && break        
+        lastdiff == diff && break
         lastx = x
         lastdiff = xdiff
     end
@@ -46,8 +50,9 @@ end
 ### Real z ###
 
 # Real x, k = 0
-# fancy initial condition does not seem to help speed.
-function lambertwk0{T<:Real}(x::T)
+
+# The fancy initial condition selection does not seem to help speed, but we leave it for now.
+function lambertwk0{T<:AbstractFloat}(x::T)::T
     x == Inf && return Inf
     const one_t = one(T)
     const oneoe = -one_t/convert(T,e)
@@ -59,7 +64,7 @@ function lambertwk0{T<:Real}(x::T)
         llx = log(lx)
         x1 = lx - llx - log(one_t - llx/lx) * itwo_t
     else
-        x1 = 0.567 * x
+        x1 = (567//1000) * x
     end
     _lambertw(x,x1)
 end
@@ -105,8 +110,7 @@ julia> lambertw(Complex(-10.0,3.0), 4)
     The constant `LAMBERTW_USE_NAN` at the top of the source file controls whether arguments
     outside the domain throw `DomainError` or return `NaN`. The default is `DomainError`.
 """
-#function lambertw{T<:Real, V<:Integer}(x::T, k::V)
-function lambertw(x::Real, k::Integer)    
+function lambertw(x::Real, k::Integer)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
     @baddomain  # more informative message like below ?
@@ -114,7 +118,7 @@ function lambertw(x::Real, k::Integer)
 end
 
 #function lambertw{T<:Integer, V<:Integer}(x::T, k::V)
-function lambertw(x::Integer, k::Integer)    
+function lambertw(x::Union{Integer,Rational}, k::Integer)
     if k == 0
         x == 0 && return float(zero(x))
         x == 1 && return convert(typeof(float(x)),LambertW.omega) # must be more efficient way
@@ -174,9 +178,8 @@ lambertw(n::Irrational, args::Integer...) = lambertw(float(n),args...)
 
 ### omega constant ###
 
-# These literals have more than Float64 and BigFloat 256 precision
 const omega_const_ = 0.567143290409783872999968662210355
-const omega_const_bf_ = parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
+# The BigFloat `omega_const_bf_` is set via a literal in the function __init__ to prevent a segfault
 
 # maybe compute higher precision. converges very quickly
 function omega_const(::Type{BigFloat})
@@ -392,40 +395,5 @@ function lambertwbp(x::Number,k::Int)
 end
 
 lambertwbp(x::Number) = _lambertw0(x)
-
-
-
-macro myvectorize_1arg(S,f)
-    S = esc(S); f = esc(f); T = esc(:T)
-    quote
-        ($f){$T<:$S}(x::AbstractArray{$T,1}) = [ ($f)(x[i]) for i=1:length(x) ]
-        ($f){$T<:$S}(x::AbstractArray{$T,2}) =
-            [ ($f)(x[i,j]) for i=1:size(x,1), j=1:size(x,2) ]
-        ($f){$T<:$S}(x::AbstractArray{$T}) =
-            reshape([ ($f)(x[i]) for i in eachindex(x) ], size(x))
-    end
-end
-
-macro myvectorize_2arg(S,f)
-    S = esc(S); f = esc(f); T1 = esc(:T1); T2 = esc(:T2)
-    quote
-        ($f){$T1<:$S, $T2<:$S}(x::($T1), y::AbstractArray{$T2}) =
-            reshape([ ($f)(x, y[i]) for i in eachindex(y) ], size(y))
-        ($f){$T1<:$S, $T2<:$S}(x::AbstractArray{$T1}, y::($T2)) =
-            reshape([ ($f)(x[i], y) for i in eachindex(x) ], size(x))
-
-        function ($f){$T1<:$S, $T2<:$S}(x::AbstractArray{$T1}, y::AbstractArray{$T2})
-            shp = promote_shape(size(x),size(y))
-            reshape([ ($f)(x[i], y[i]) for i in eachindex(x,y) ], shp)
-        end
-    end
-end
-
-if VERSION < v"0.5"
-@myvectorize_1arg Number lambertw
-@myvectorize_2arg Number lambertw
-@myvectorize_1arg Number lambertwbp
-@myvectorize_2arg Number lambertwbp
-end
 
 end #module
