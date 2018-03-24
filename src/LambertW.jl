@@ -36,7 +36,7 @@ function _lambertw{T<:Number}(z::T, x::T)
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
         xdiff = abs(lastx - x)
         xdiff <= 2*eps(abs(lastx)) && break
-        lastdiff == diff && break        
+        lastdiff == diff && break
         lastx = x
         lastdiff = xdiff
     end
@@ -106,7 +106,7 @@ julia> lambertw(Complex(-10.0,3.0), 4)
     outside the domain throw `DomainError` or return `NaN`. The default is `DomainError`.
 """
 #function lambertw{T<:Real, V<:Integer}(x::T, k::V)
-function lambertw(x::Real, k::Integer)    
+function lambertw(x::Real, k::Integer)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
     @baddomain  # more informative message like below ?
@@ -114,7 +114,7 @@ function lambertw(x::Real, k::Integer)
 end
 
 #function lambertw{T<:Integer, V<:Integer}(x::T, k::V)
-function lambertw(x::Integer, k::Integer)    
+function lambertw(x::Integer, k::Integer)
     if k == 0
         x == 0 && return float(zero(x))
         x == 1 && return convert(typeof(float(x)),LambertW.omega) # must be more efficient way
