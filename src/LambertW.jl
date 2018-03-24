@@ -1,5 +1,4 @@
-# with precompilation, tests cause segfault somehow due to BigFloat
-#VERSION >= v"0.4.0-dev+6521" && __precompile__()
+__precompile__()
 
 module LambertW
 
