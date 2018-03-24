@@ -8,6 +8,11 @@ export lambertw, lambertwbp, ω, omega
 
 using Compat
 
+function __init__()
+    global const omega_const_bf_ =
+        parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
+end
+
 #### Lambert W function ####
 
 const LAMBERTW_USE_NAN = false
@@ -174,9 +179,8 @@ lambertw(n::Irrational, args::Integer...) = lambertw(float(n),args...)
 
 ### omega constant ###
 
-# These literals have more than Float64 and BigFloat 256 precision
 const omega_const_ = 0.567143290409783872999968662210355
-const omega_const_bf_ = parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
+# The BigFloat `omega_const_bf_` is set via a literal in the function __init__ to prevent a segfault
 
 # maybe compute higher precision. converges very quickly
 function omega_const(::Type{BigFloat})
