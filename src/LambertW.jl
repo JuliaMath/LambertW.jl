@@ -50,8 +50,9 @@ end
 ### Real z ###
 
 # Real x, k = 0
-# fancy initial condition does not seem to help speed.
-function lambertwk0{T<:Real}(x::T)
+
+# The fancy initial condition selection does not seem to help speed, but we leave it for now.
+function lambertwk0{T<:AbstractFloat}(x::T)::T
     x == Inf && return Inf
     const one_t = one(T)
     const oneoe = -one_t/convert(T,e)
@@ -109,7 +110,6 @@ julia> lambertw(Complex(-10.0,3.0), 4)
     The constant `LAMBERTW_USE_NAN` at the top of the source file controls whether arguments
     outside the domain throw `DomainError` or return `NaN`. The default is `DomainError`.
 """
-#function lambertw{T<:Real, V<:Integer}(x::T, k::V)
 function lambertw(x::Real, k::Integer)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
@@ -118,7 +118,7 @@ function lambertw(x::Real, k::Integer)
 end
 
 #function lambertw{T<:Integer, V<:Integer}(x::T, k::V)
-function lambertw(x::Integer, k::Integer)
+function lambertw(x::Union{Integer,Rational}, k::Integer)
     if k == 0
         x == 0 && return float(zero(x))
         x == 1 && return convert(typeof(float(x)),LambertW.omega) # must be more efficient way
