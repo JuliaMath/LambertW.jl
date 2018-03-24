@@ -63,7 +63,7 @@ function lambertwk0{T<:Real}(x::T)
         llx = log(lx)
         x1 = lx - llx - log(one_t - llx/lx) * itwo_t
     else
-        x1 = 0.567 * x
+        x1 = (567//1000) * x
     end
     _lambertw(x,x1)
 end
