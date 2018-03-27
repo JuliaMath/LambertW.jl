@@ -8,7 +8,6 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jla
 [![Coverage Status](https://coveralls.io/repos/github/jlapeyre/LambertW.jl/badge.svg?branch=master)](https://coveralls.io/github/jlapeyre/LambertW.jl?branch=master)
 [![codecov.io](http://codecov.io/github/jlapeyre/LambertW.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/LambertW.jl?branch=master)
 
-[![LambertW](http://pkg.julialang.org/badges/LambertW_0.4.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.4)
 [![LambertW](http://pkg.julialang.org/badges/LambertW_0.5.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.5)
 [![LambertW](http://pkg.julialang.org/badges/LambertW_0.6.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.6)
 
@@ -41,9 +40,6 @@ julia> lambertw(-pi/2 + 0im)  / pi
 4.6681174759251105e-18 + 0.5im
 ```
 
-For Julia v0.4, `lambertw` is vectorized, that is, it automatically maps over arrays.
-For later versions, use that standard notation: `lambertw.(...)`.
-
 ### lambertwbp(x,k=0)
 
 Return `1 + W(-1/e + z)`, for `z` satisfying `0 <= abs(z) < 1/e`,
@@ -64,9 +60,6 @@ julia> lambertwbp(0)
 `lambertwbp` uses a series expansion about the branch point `z=-1/e`.
 The loss of precision in `lambertw` is analogous to the loss of precision
 in computing the `sqrt(1-x)` for `x` close to `1`.
-
-For Julia v0.4, `lambertwbp` is vectorized, that is automatically maps over arrays. For later versions,
-use that standard notation: `lambertwp.(...)`.
 
 ### omega constant
 

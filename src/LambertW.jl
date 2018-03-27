@@ -24,12 +24,9 @@ macro baddomain()
     end
 end
 
-# Maybe finish implementing this later ?
-#lambert_verbose() = false
-
 # Use Halley's root-finding method to find x = lambertw(z) with
 # initial point x.
-function _lambertw{T<:Number}(z::T, x::T)
+function _lambertw(z::T, x::T) where T <: Number
     two_t = convert(T,2)
     lastx = x
     lastdiff = zero(T)
@@ -52,7 +49,7 @@ end
 # Real x, k = 0
 
 # The fancy initial condition selection does not seem to help speed, but we leave it for now.
-function lambertwk0{T<:AbstractFloat}(x::T)::T
+function lambertwk0(x::T)::T where T<:AbstractFloat
     x == Inf && return Inf
     const one_t = one(T)
     const oneoe = -one_t/convert(T,e)
@@ -70,7 +67,7 @@ function lambertwk0{T<:AbstractFloat}(x::T)::T
 end
 
 # Real x, k = -1
-function _lambertwkm1{T<:Real}(x::T)
+function _lambertwkm1(x::T) where T<:Real
     const oneoe = -one(T)/convert(T,e)
     x == oneoe && return -one(T)
     oneoe <= x || @baddomain
@@ -81,13 +78,13 @@ end
 
 
 """
-    lambertw{T<:Real, V<:Integer}(z::Complex{T}, k::V=0)
-    lambertw{T<:Real, V<:Integer}(z::T, k::V=0)
+    lambertw(z::Complex{T}, k::V=0) where {T<:Real, V<:Integer}
+    lambertw(z::T, k::V=0) where {T<:Real, V<:Integer}
 
 Compute the `k`th branch of the Lambert W function of `z`. If `z` is real, `k` must be
 either `0` or `-1`. For `Real` `z`, the domain of the branch `k = -1` is `[-1/e,0]` and the
 domain of the branch `k = 0` is `[-1/e,Inf]`. For `Complex` `z`, and all `k`, the domain is
-the complex plane. `lambertw` is vectorized.
+the complex plane.
 
 ```jldoctest
 julia> lambertw(-1/e,-1)
@@ -117,7 +114,6 @@ function lambertw(x::Real, k::Integer)
 #    error("lambertw: real x must have k == 0 or k == -1")
 end
 
-#function lambertw{T<:Integer, V<:Integer}(x::T, k::V)
 function lambertw(x::Union{Integer,Rational}, k::Integer)
     if k == 0
         x == 0 && return float(zero(x))
@@ -129,41 +125,41 @@ end
 ### Complex z ###
 
 # choose initial value inside correct branch for root finding
-function lambertw{T<:Real}(z::Complex{T}, k::Integer)
-    rT = typeof(real(z))
-    one_t = one(rT)
+function lambertw(z::Complex{T}, k::Integer) where T<:Real
+    one_t = one(T)
     local w::Complex{T}
-    if abs(z) <= one_t/convert(rT,e)
+    pointseven = 7//10
+    if abs(z) <= one_t/convert(T,e)
         if z == 0
             k == 0 && return z
-            return complex(-convert(rT,Inf),zero(rT))
+            return complex(-convert(T,Inf),zero(T))
         end
         if k == 0
             w = z
         elseif k == -1 && imag(z) == 0 && real(z) < 0
-            w = complex(log(-real(z)),1/10^7) # need offset for z ≈ -1/e.
+            w = complex(log(-real(z)),1//10^7) # need offset for z ≈ -1/e.
         else
             w = log(z)
             k != 0 ? w += complex(0,k * 2 * pi) : nothing
         end
-    elseif k == 0 && imag(z) <= 0.7 && abs(z) <= 0.7  # We probably do not need to worry about type because this is only a seed value.
-        w = abs(z+0.5) < 0.1 ? imag(z) > 0 ? complex(0.7,0.7) : complex(0.7,-0.7) : z
+    elseif k == 0 && imag(z) <= pointseven && abs(z) <= pointseven
+        w = abs(z+ 1//2) < 1//10 ? imag(z) > 0 ? complex(pointseven,pointseven) : complex(pointseven,-pointseven) : z
     else
-        if real(z) == convert(rT,Inf)
+        if real(z) == convert(T,Inf)
             k == 0 && return z
             return z + complex(0,2*k*pi)
         end
-        real(z) == -convert(rT,Inf) && return -z + complex(0,(2*k+1)*pi)
+        real(z) == -convert(T,Inf) && return -z + complex(0,(2*k+1)*pi)
         w = log(z)
         k != 0 ? w += complex(0, 2*k*pi) : nothing
     end
     _lambertw(z,w)
 end
 
-lambertw{T<:Integer}(z::Complex{T}, k::Integer) = lambertw(float(z),k)
+lambertw(z::Complex{T}, k::Integer) where T<:Integer = lambertw(float(z),k)
 
 # lambertw(e + 0im,k) is ok for all k
-function lambertw{T<:Integer}(::Irrational{:e}, k::T)
+function lambertw(::Irrational{:e}, k::T) where T<:Integer
     k == 0 && return 1
     @baddomain
 end
@@ -215,29 +211,7 @@ julia> big(omega)
 ```
 """
 const ω = Irrational{:ω}()
-
-# Repeat the documentation because v0.4 apparently does not allow ω, omega.
-doc"""
-    omega
-    ω
-
-A constant defined by `ω exp(ω) = 1`.
-
-```jldoctest
-julia> ω
-ω = 0.5671432904097...
-
-julia> omega
-ω = 0.5671432904097...
-
-julia> ω * exp(ω)
-1.0
-
-julia> big(omega)
-5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01
-```
-"""
-const omega = ω
+@doc (@doc ω) omega = ω
 
 convert(::Type{BigFloat}, ::Irrational{:ω}) = omega_const(BigFloat)
 convert(::Type{Float64}, ::Irrational{:ω}) = omega_const_
@@ -388,7 +362,7 @@ julia> convert(Float64,(lambertw(-BigFloat(1)/e + BigFloat(10)^(-18),-1) + 1))
     The loss of precision in `lambertw` is analogous to the loss of precision
     in computing the `sqrt(1-x)` for `x` close to `1`.
 """
-function lambertwbp(x::Number,k::Int)
+function lambertwbp(x::Number,k::Integer)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
     error("expansion about branch point only implemented for k = 0 and -1")
