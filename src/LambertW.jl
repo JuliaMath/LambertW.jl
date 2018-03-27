@@ -78,8 +78,8 @@ end
 
 
 """
-    lambertw{T<:Real, V<:Integer}(z::Complex{T}, k::V=0)
-    lambertw{T<:Real, V<:Integer}(z::T, k::V=0)
+    lambertw(z::Complex{T}, k::V=0) where {T<:Real, V<:Integer}
+    lambertw(z::T, k::V=0) where {T<:Real, V<:Integer}
 
 Compute the `k`th branch of the Lambert W function of `z`. If `z` is real, `k` must be
 either `0` or `-1`. For `Real` `z`, the domain of the branch `k = -1` is `[-1/e,0]` and the
