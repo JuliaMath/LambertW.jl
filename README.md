@@ -41,9 +41,6 @@ julia> lambertw(-pi/2 + 0im)  / pi
 4.6681174759251105e-18 + 0.5im
 ```
 
-For Julia v0.4, `lambertw` is vectorized, that is, it automatically maps over arrays.
-For later versions, use that standard notation: `lambertw.(...)`.
-
 ### lambertwbp(x,k=0)
 
 Return `1 + W(-1/e + z)`, for `z` satisfying `0 <= abs(z) < 1/e`,

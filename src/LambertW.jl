@@ -87,7 +87,7 @@ end
 Compute the `k`th branch of the Lambert W function of `z`. If `z` is real, `k` must be
 either `0` or `-1`. For `Real` `z`, the domain of the branch `k = -1` is `[-1/e,0]` and the
 domain of the branch `k = 0` is `[-1/e,Inf]`. For `Complex` `z`, and all `k`, the domain is
-the complex plane. `lambertw` is vectorized.
+the complex plane.
 
 ```jldoctest
 julia> lambertw(-1/e,-1)
@@ -132,6 +132,7 @@ end
 function lambertw{T<:Real}(z::Complex{T}, k::Integer)
     one_t = one(T)
     local w::Complex{T}
+    pointseven = 7//10
     if abs(z) <= one_t/convert(T,e)
         if z == 0
             k == 0 && return z
@@ -145,8 +146,8 @@ function lambertw{T<:Real}(z::Complex{T}, k::Integer)
             w = log(z)
             k != 0 ? w += complex(0,k * 2 * pi) : nothing
         end
-    elseif k == 0 && imag(z) <= 0.7 && abs(z) <= 0.7  # We probably do not need to worry about type because this is only a seed value.
-        w = abs(z+0.5) < 0.1 ? imag(z) > 0 ? complex(0.7,0.7) : complex(0.7,-0.7) : z
+    elseif k == 0 && imag(z) <= pointseven && abs(z) <= pointseven
+        w = abs(z+ 1//2) < 1//10 ? imag(z) > 0 ? complex(pointseven,pointseven) : complex(pointseven,-pointseven) : z
     else
         if real(z) == convert(T,Inf)
             k == 0 && return z
