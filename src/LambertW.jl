@@ -130,18 +130,17 @@ end
 
 # choose initial value inside correct branch for root finding
 function lambertw{T<:Real}(z::Complex{T}, k::Integer)
-    rT = typeof(real(z))
-    one_t = one(rT)
+    one_t = one(T)
     local w::Complex{T}
-    if abs(z) <= one_t/convert(rT,e)
+    if abs(z) <= one_t/convert(T,e)
         if z == 0
             k == 0 && return z
-            return complex(-convert(rT,Inf),zero(rT))
+            return complex(-convert(T,Inf),zero(T))
         end
         if k == 0
             w = z
         elseif k == -1 && imag(z) == 0 && real(z) < 0
-            w = complex(log(-real(z)),1/10^7) # need offset for z ≈ -1/e.
+            w = complex(log(-real(z)),1//10^7) # need offset for z ≈ -1/e.
         else
             w = log(z)
             k != 0 ? w += complex(0,k * 2 * pi) : nothing
@@ -149,11 +148,11 @@ function lambertw{T<:Real}(z::Complex{T}, k::Integer)
     elseif k == 0 && imag(z) <= 0.7 && abs(z) <= 0.7  # We probably do not need to worry about type because this is only a seed value.
         w = abs(z+0.5) < 0.1 ? imag(z) > 0 ? complex(0.7,0.7) : complex(0.7,-0.7) : z
     else
-        if real(z) == convert(rT,Inf)
+        if real(z) == convert(T,Inf)
             k == 0 && return z
             return z + complex(0,2*k*pi)
         end
-        real(z) == -convert(rT,Inf) && return -z + complex(0,(2*k+1)*pi)
+        real(z) == -convert(T,Inf) && return -z + complex(0,(2*k+1)*pi)
         w = log(z)
         k != 0 ? w += complex(0, 2*k*pi) : nothing
     end
