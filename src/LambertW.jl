@@ -24,12 +24,9 @@ macro baddomain()
     end
 end
 
-# Maybe finish implementing this later ?
-#lambert_verbose() = false
-
 # Use Halley's root-finding method to find x = lambertw(z) with
 # initial point x.
-function _lambertw{T<:Number}(z::T, x::T)
+function _lambertw(z::T, x::T) where T <: Number
     two_t = convert(T,2)
     lastx = x
     lastdiff = zero(T)
@@ -52,7 +49,7 @@ end
 # Real x, k = 0
 
 # The fancy initial condition selection does not seem to help speed, but we leave it for now.
-function lambertwk0{T<:AbstractFloat}(x::T)::T
+function lambertwk0(x::T)::T where T<:AbstractFloat
     x == Inf && return Inf
     const one_t = one(T)
     const oneoe = -one_t/convert(T,e)
@@ -70,7 +67,7 @@ function lambertwk0{T<:AbstractFloat}(x::T)::T
 end
 
 # Real x, k = -1
-function _lambertwkm1{T<:Real}(x::T)
+function _lambertwkm1(x::T) where T<:Real
     const oneoe = -one(T)/convert(T,e)
     x == oneoe && return -one(T)
     oneoe <= x || @baddomain
@@ -117,7 +114,6 @@ function lambertw(x::Real, k::Integer)
 #    error("lambertw: real x must have k == 0 or k == -1")
 end
 
-#function lambertw{T<:Integer, V<:Integer}(x::T, k::V)
 function lambertw(x::Union{Integer,Rational}, k::Integer)
     if k == 0
         x == 0 && return float(zero(x))
@@ -129,7 +125,7 @@ end
 ### Complex z ###
 
 # choose initial value inside correct branch for root finding
-function lambertw{T<:Real}(z::Complex{T}, k::Integer)
+function lambertw(z::Complex{T}, k::Integer) where T<:Real
     one_t = one(T)
     local w::Complex{T}
     pointseven = 7//10
@@ -160,10 +156,10 @@ function lambertw{T<:Real}(z::Complex{T}, k::Integer)
     _lambertw(z,w)
 end
 
-lambertw{T<:Integer}(z::Complex{T}, k::Integer) = lambertw(float(z),k)
+lambertw(z::Complex{T}, k::Integer) where T<:Integer = lambertw(float(z),k)
 
 # lambertw(e + 0im,k) is ok for all k
-function lambertw{T<:Integer}(::Irrational{:e}, k::T)
+function lambertw(::Irrational{:e}, k::T) where T<:Integer
     k == 0 && return 1
     @baddomain
 end
@@ -366,7 +362,7 @@ julia> convert(Float64,(lambertw(-BigFloat(1)/e + BigFloat(10)^(-18),-1) + 1))
     The loss of precision in `lambertw` is analogous to the loss of precision
     in computing the `sqrt(1-x)` for `x` close to `1`.
 """
-function lambertwbp(x::Number,k::Int)
+function lambertwbp(x::Number,k::Integer)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
     error("expansion about branch point only implemented for k = 0 and -1")
