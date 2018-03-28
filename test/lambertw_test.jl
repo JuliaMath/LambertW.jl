@@ -8,6 +8,13 @@ macro test_baddomain(expr)
     end
 end
 
+const euler =
+if isdefined(Base, :MathConstants)
+    Base.MathConstants.e
+else
+    e
+end
+
 ### domain errors
 
 @test_baddomain lambertw(-2.0,0)
@@ -16,8 +23,8 @@ end
 @test_baddomain lambertw(NaN)
 
 ## math constant e
-@test_baddomain lambertw(e,1)
-@test_baddomain lambertw(e,-1)
+@test_baddomain lambertw(euler,1)
+@test_baddomain lambertw(euler,-1)
 
 ## integer arguments return floating point types
 @test typeof(lambertw(0)) <: AbstractFloat
@@ -27,11 +34,11 @@ end
 
 # could return math const e, but this would break type stability
 @test typeof(lambertw(1)) <: AbstractFloat
-@test lambertw(e,0) == 1
+@test lambertw(euler,0) == 1
 
 ## value at branch point where real branches meet
-@test lambertw(-1/e,0) == lambertw(-1/e,-1) == -1
-@test typeof(lambertw(-1/e,0)) == typeof(lambertw(-1/e,-1)) <: AbstractFloat
+@test lambertw(-1/euler,0) == lambertw(-1/euler,-1) == -1
+@test typeof(lambertw(-1/euler,0)) == typeof(lambertw(-1/euler,-1)) <: AbstractFloat
 
 ## convert irrationals to float
 
@@ -87,9 +94,9 @@ end
 # The routine will start at -1/e + eps * im, rather than -1/e + 0im,
 # otherwise root finding will fail
 if Int != Int32
-    @test abs(lambertw(-1.0/e  + 0im,-1)) == 1
+    @test abs(lambertw(-1.0/euler  + 0im,-1)) == 1
 else
-    @test abs(lambertw(-1.0/e  + 0im,-1) + 1) < 1e-7
+    @test abs(lambertw(-1.0/euler  + 0im,-1) + 1) < 1e-7
 end
 # lambertw for BigFloat is more precise than Float64. Note
 # that 70 digits in test is about 35 digits in W
@@ -105,15 +112,14 @@ end
 ## get ω from recursion and compare to value from lambertw
 let sp = precision(BigFloat)
   @compat  setprecision(512)
-    @test lambertw(big(1)) == big(ω)
+    @test lambertw(big(1)) == big(LambertW.omega)
   @compat  setprecision(sp)
 end
 
-#@test lambertw(1) == ω
-@test lambertw(1) == float(ω)
-@test Float16(ω) == Float16(0.5674)
-@test Float32(ω) == 0.56714326f0
-@test lambertw(BigInt(1)) == big(ω)
+@test lambertw(1) == float(LambertW.omega)
+@test convert(Float16,LambertW.omega) == convert(Float16,0.5674)
+@test convert(Float32,LambertW.omega) == 0.56714326f0
+@test lambertw(BigInt(1)) == big(LambertW.omega)
 
 ###  expansion about branch point
 
@@ -132,13 +138,13 @@ let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
   @compat  setprecision(2048)
     for i in 1:300
         # k = 0
-        @test (wo = lambertwbp(Float64(z)); diff = abs(-1 + wo - lambertw(z-1/big(e))); true)
+        @test (wo = lambertwbp(Float64(z)); diff = abs(-1 + wo - lambertw(z-1/big(euler))); true)
         if diff > 5e-16
             println(Float64(z), " ", Float64(diff))
         end
         @test diff < 5e-16
         #  k = -1
-        @test (wo = lambertwbp(Float64(z),-1); diff = abs(-1 + wo - lambertw(z-1/big(e),-1)); true)
+        @test (wo = lambertwbp(Float64(z),-1); diff = abs(-1 + wo - lambertw(z-1/big(euler),-1)); true)
         if diff > 5e-16
             println(Float64(z), " ", Float64(diff))
         end
@@ -151,7 +157,7 @@ end
 
 # test the expansion about branch point for k=-1,
 # by comparing to exact BigFloat calculation.
-@test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(e)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
+@test lambertwbp(1e-20,-1) - 1 - lambertw(-BigFloat(1)/big(euler)+ BigFloat(1)/BigFloat(10)^BigFloat(20),-1) < 1e-16
 
 @test abs(lambertwbp(Complex(.01,.01),-1) - Complex(-0.2755038208041206, -0.1277888928494641)) < 1e-14
 

@@ -3,12 +3,21 @@ __precompile__()
 module LambertW
 
 import Base: convert
-export lambertw, lambertwbp, ω, omega
+export lambertw, lambertwbp
 
 using Compat
 
+const euler =
+if isdefined(Base, :MathConstants)
+    Base.MathConstants.e
+else
+    e
+end
+
+const omega_const_bf_ = Ref{BigFloat}()
+
 function __init__()
-    global const omega_const_bf_ =
+    omega_const_bf_[] =
         parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
 end
 
@@ -16,11 +25,11 @@ end
 
 const LAMBERTW_USE_NAN = false
 
-macro baddomain()
+macro baddomain(v)
     if LAMBERTW_USE_NAN
         return :(return(NaN))
     else
-        return :(throw(DomainError()))
+        return esc(:(throw(DomainError($v))))
     end
 end
 
@@ -51,11 +60,11 @@ end
 # The fancy initial condition selection does not seem to help speed, but we leave it for now.
 function lambertwk0(x::T)::T where T<:AbstractFloat
     x == Inf && return Inf
-    const one_t = one(T)
-    const oneoe = -one_t/convert(T,e)
+    one_t = one(T)
+    oneoe = -one_t/convert(T,euler)
     x == oneoe && return -one_t
-    const itwo_t = 1/convert(T,2)
-    oneoe <= x || @baddomain
+    itwo_t = 1/convert(T,2)
+    oneoe <= x || @baddomain(x)
     if x > one_t
         lx = log(x)
         llx = log(lx)
@@ -68,11 +77,11 @@ end
 
 # Real x, k = -1
 function _lambertwkm1(x::T) where T<:Real
-    const oneoe = -one(T)/convert(T,e)
+    oneoe = -one(T)/convert(T,euler)
     x == oneoe && return -one(T)
-    oneoe <= x || @baddomain
+    oneoe <= x || @baddomain(x)
     x == zero(T) && return -convert(T,Inf)
-    x < zero(T) || @baddomain
+    x < zero(T) || @baddomain(x)
     _lambertw(x,log(-x))
 end
 
@@ -110,7 +119,7 @@ julia> lambertw(Complex(-10.0,3.0), 4)
 function lambertw(x::Real, k::Integer)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
-    @baddomain  # more informative message like below ?
+    @baddomain(k)  # more informative message like below ?
 #    error("lambertw: real x must have k == 0 or k == -1")
 end
 
@@ -129,7 +138,7 @@ function lambertw(z::Complex{T}, k::Integer) where T<:Real
     one_t = one(T)
     local w::Complex{T}
     pointseven = 7//10
-    if abs(z) <= one_t/convert(T,e)
+    if abs(z) <= one_t/convert(T,euler)
         if z == 0
             k == 0 && return z
             return complex(-convert(T,Inf),zero(T))
@@ -159,13 +168,15 @@ end
 lambertw(z::Complex{T}, k::Integer) where T<:Integer = lambertw(float(z),k)
 
 # lambertw(e + 0im,k) is ok for all k
-function lambertw(::Irrational{:e}, k::T) where T<:Integer
+#function lambertw(::Irrational{:e}, k::T) where T<:Integer
+function lambertw(::typeof(euler), k::T) where T<:Integer
     k == 0 && return 1
-    @baddomain
+    @baddomain(k)
 end
 
 # Maybe this should return a float
-lambertw(::Irrational{:e}) = 1
+lambertw(::typeof(euler)) = 1
+#lambertw(::Irrational{:e}) = 1
 
 #lambertw{T<:Number}(x::T) = lambertw(x,0)
 lambertw(x::Number) = lambertw(x,0)
@@ -179,18 +190,18 @@ const omega_const_ = 0.567143290409783872999968662210355
 
 # maybe compute higher precision. converges very quickly
 function omega_const(::Type{BigFloat})
-  @compat  precision(BigFloat) <= 256 && return omega_const_bf_
+  @compat  precision(BigFloat) <= 256 && return omega_const_bf_[]
     myeps = eps(BigFloat)
-    oc = omega_const_bf_
+    oc = omega_const_bf_[]
     for i in 1:100
         nextoc = (1 + oc) / (1 + exp(oc))
         abs(oc - nextoc) <= myeps && break
         oc = nextoc
     end
-    oc
+    return oc
 end
 
-doc"""
+"""
     omega
     ω
 
@@ -213,14 +224,19 @@ julia> big(omega)
 const ω = Irrational{:ω}()
 @doc (@doc ω) omega = ω
 
-convert(::Type{BigFloat}, ::Irrational{:ω}) = omega_const(BigFloat)
-convert(::Type{Float64}, ::Irrational{:ω}) = omega_const_
-convert(::Type{Float32}, ::Irrational{:ω}) = Float32(omega_const_)
-convert(::Type{Float16}, ::Irrational{:ω}) = Float16(omega_const_)
+# The following three lines may be removed when support for v0.6 is dropped
+Base.convert(::Type{AbstractFloat}, o::Irrational{:ω}) = Float64(o)
+Base.convert(::Type{Float16}, o::Irrational{:ω}) = Float16(o)
+Base.convert(::Type{T}, o::Irrational{:ω}) where T <:Number = T(o)
+
+Base.Float64(::Irrational{:ω}) = omega_const_  # FIXME: This is very slow. Why ?
+Base.Float32(::Irrational{:ω}) = Float32(omega_const_)
+Base.Float16(::Irrational{:ω}) = Float16(omega_const_)
+Base.BigFloat(o::Irrational{:ω}) = omega_const(BigFloat)
 
 ### Expansion about branch point x = -1/e  ###
 
-#  Refer to the paper "On the Lambert W function".  In (4.22)
+# Refer to the paper "On the Lambert W function". In (4.22)
 # coefficients μ₀ through μ₃ are given explicitly. Recursion relations
 # (4.23) and (4.24) for all μ are also given. This code implements the
 # recursion relations.
@@ -253,8 +269,10 @@ end
 # compute array of coefficients μ in (4.22).
 # m[1] is μ₀
 function lamwcoeff(T::DataType, n::Int)
-    a = Array{T}(n)
-    m = Array{T}(n)
+    # a = @compat Array{T}(undef,n)
+    # m = @compat Array{T}(undef,n)
+    a = zeros(T,n) # We don't need initialization, but Compat is a huge PITA.
+    m = zeros(T,n)
     cset(a,0,2)  # α₀ literal in paper
     cset(a,1,-1) # α₁ literal in paper
     cset(a,2,0)  # α₂ get this by solving (4.23) for alpha_2 with values printed in paper
@@ -307,12 +325,12 @@ function wser(p,x)
     x < 5e-2 && return wser32(p)
     x < 1e-1 && return wser50(p)
     x < 1.9e-1 && return wser100(p)
-    x > 1/e && @baddomain  # radius of convergence
+    x > 1/euler && @baddomain(x)  # radius of convergence
     return wser290(p)  # good for x approx .32
 end
 
 # These may need tuning.
-function wser{T<:Real}(p::Complex{T},z)
+function wser(p::Complex{T},z) where T<:Real
     x = abs(z)
     x < 4e-11 && return wser3(p)
     x < 1e-5 && return wser7(p)
@@ -322,18 +340,18 @@ function wser{T<:Real}(p::Complex{T},z)
     x < 5e-2 && return wser32(p)
     x < 1e-1 && return wser50(p)
     x < 1.9e-1 && return wser100(p)
-    x > 1/e && @baddomain  # radius of convergence
+    x > 1/euler && @baddomain(x)  # radius of convergence
     return wser290(p)
 end
 
 @inline function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
-    ps = 2*e*x;
+    ps = 2*euler*x;
     p = sqrt(ps)
     wser(p,x)
 end
 
 @inline function _lambertwm1(x) # 1 + W(-1/e + x)  , k = -1
-    ps = 2*e*x;
+    ps = 2*euler*x;
     p = -sqrt(ps)
     wser(p,x)
 end
