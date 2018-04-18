@@ -30,7 +30,7 @@ function _lambertw(z::T, x::T, maxits) where T <: Number
         ex = exp(x)
         xexz = x * ex - z
         x1 = x + 1
-        x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
+        x -= xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
         xdiff = abs(lastx - x)
         if xdiff <= 3*eps(abs(lastx)) || lastdiff == xdiff  # second condition catches two-value cycle
             converged = true
@@ -365,7 +365,7 @@ julia> convert(Float64,(lambertw(-BigFloat(1)/e + BigFloat(10)^(-18),-1) + 1))
 function lambertwbp(x::Number,k::Integer)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
-    throw(error("expansion about branch point only implemented for k = 0 and -1"))
+    throw(ArgumentError("expansion about branch point only implemented for k = 0 and -1."))
 end
 
 lambertwbp(x::Number) = _lambertw0(x)
