@@ -11,10 +11,13 @@ import Compat.MathConstants
 
 const omega_const_bf_ = Ref{BigFloat}()
 
+#const warncount = Int[0]
+
 function __init__()
     # allocate storage for this BigFloat constant each time this module is loaded
     omega_const_bf_[] =
         parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
+#    warncount[1] = 0
 end
 
 #### Lambert W function ####
@@ -41,7 +44,11 @@ function _lambertw(z::T, x::T, maxits) where T <: Number
         lastdiff = xdiff
     end
     converged || warn("lambertw with x=", xin, " did not converge in ", maxits, " iterations.")
-    x
+    # if ! converged
+    #     warncount[1] += 1
+    #     warn("lambertw did not converge in ", maxits, " iterations, ", warncount[1], " ", lastx)
+    # end
+    return x
 end
 
 ### Real z ###
