@@ -153,22 +153,15 @@ function lambertw(z::Complex{T}, k::Integer) where T<:Real
 end
 
 lambertw(z::Complex{T}, k::Integer) where T<:Integer = lambertw(float(z),k)
+lambertw(x::Number) = lambertw(x,0)
+lambertw(n::Irrational, args::Integer...) = lambertw(float(n),args...)
 
 # lambertw(e + 0im,k) is ok for all k
-#function lambertw(::Irrational{:e}, k::T) where T<:Integer
-function lambertw(::typeof(MathConstants.e), k::T) where T<:Integer
+# Maybe this should return a float. But, this should cause no type instability in any case
+function lambertw(::typeof(MathConstants.e), k::T=0) where T<:Integer
     k == 0 && return 1
     throw(DomainError(k))
 end
-
-# Maybe this should return a float
-lambertw(::typeof(MathConstants.e)) = 1
-#lambertw(::Irrational{:e}) = 1
-
-#lambertw{T<:Number}(x::T) = lambertw(x,0)
-lambertw(x::Number) = lambertw(x,0)
-
-lambertw(n::Irrational, args::Integer...) = lambertw(float(n),args...)
 
 ### omega constant ###
 
