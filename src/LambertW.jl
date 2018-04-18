@@ -46,7 +46,7 @@ end
 ### Real z ###
 
 # Real x, k = 0
-
+# This appears to be type stable with T=Float64 and T=BigFloat, including if x=Inf.
 # The fancy initial condition selection does not seem to help speed, but we leave it for now.
 function lambertwk0(x::T, maxits)::T where T<:AbstractFloat
     isnan(x) && return(NaN)
@@ -54,8 +54,8 @@ function lambertwk0(x::T, maxits)::T where T<:AbstractFloat
     one_t = one(T)
     oneoe = -one_t/convert(T,MathConstants.e)
     x == oneoe && return -one_t
-    itwo_t = 1/convert(T,2)
     oneoe <= x || throw(DomainError(x))
+    itwo_t = 1/convert(T,2)
     if x > one_t
         lx = log(x)
         llx = log(lx)
@@ -67,15 +67,14 @@ function lambertwk0(x::T, maxits)::T where T<:AbstractFloat
 end
 
 # Real x, k = -1
-function _lambertwkm1(x::T, maxits) where T<:Real
+function lambertwkm1(x::T, maxits) where T<:Real
     oneoe = -one(T)/convert(T,MathConstants.e)
-    x == oneoe && return -one(T)
-    oneoe <= x || throw(DomainError(x))
-    x == zero(T) && return -convert(T,Inf)
+    x == oneoe && return -one(T) # W approaches -1 as x -> -1/e from above
+    oneoe <= x || throw(DomainError(x))  # branch domain exludes x < -1/e
+    x == zero(T) && return -convert(T,Inf) # W decreases w/o bound as x -> 0 from below
     x < zero(T) || throw(DomainError(x))
-    _lambertw(x, log(-x), maxits)
+    return _lambertw(x, log(-x), maxits)
 end
-
 
 """
     lambertw(z::Complex{T}, k::V=0) where {T<:Real, V<:Integer}
@@ -108,7 +107,7 @@ lambertw(z, k::Integer=0, maxits::Integer=1000) = lambertw_(z, k, maxits)
 
 function lambertw_(x::Real, k, maxits)
     k == 0 && return lambertwk0(x, maxits)
-    k == -1 && return _lambertwkm1(x, maxits)
+    k == -1 && return lambertwkm1(x, maxits)
     throw(DomainError(k, "lambertw: real x must have branch k == 0 or k == -1"))
 end
 
@@ -186,7 +185,7 @@ end
     omega
     ω
 
-A constant defined by `ω exp(ω) = 1`.
+The constant defined by `ω exp(ω) = 1`.
 
 ```jldoctest
 julia> ω
