@@ -10,8 +10,8 @@ import Compat.MathConstants
 @test isnan(lambertw(NaN))
 
 ## math constant e
-@test_baddomain lambertw(MathConstants.e,1)
-@test_baddomain lambertw(MathConstants.e,-1)
+@test_throws DomainError lambertw(MathConstants.e,1)
+@test_throws DomainError lambertw(MathConstants.e,-1)
 
 ## integer arguments return floating point types
 @test typeof(lambertw(0)) <: AbstractFloat

@@ -20,13 +20,13 @@ end
 
 const LAMBERTW_USE_NAN = false
 
-macro baddomain(v)
-    if LAMBERTW_USE_NAN
-        return :(return(NaN))
-    else
-        return esc(:(throw(DomainError($v))))
-    end
-end
+# macro baddomain(v)
+#     if LAMBERTW_USE_NAN
+#         return :(return(NaN))
+#     else
+#         return esc(:(throw(DomainError($v))))
+#     end
+# end
 
 # Use Halley's root-finding method to find x = lambertw(z) with
 # initial point x.
@@ -60,7 +60,7 @@ function lambertwk0(x::T)::T where T<:AbstractFloat
     oneoe = -one_t/convert(T,MathConstants.e)
     x == oneoe && return -one_t
     itwo_t = 1/convert(T,2)
-    oneoe <= x || @baddomain(x)
+    oneoe <= x || throw(DomainError(x))
     if x > one_t
         lx = log(x)
         llx = log(lx)
@@ -75,9 +75,9 @@ end
 function _lambertwkm1(x::T) where T<:Real
     oneoe = -one(T)/convert(T,MathConstants.e)
     x == oneoe && return -one(T)
-    oneoe <= x || @baddomain(x)
+    oneoe <= x || throw(DomainError(x))
     x == zero(T) && return -convert(T,Inf)
-    x < zero(T) || @baddomain(x)
+    x < zero(T) || throw(DomainError(x))
     _lambertw(x,log(-x))
 end
 
@@ -108,15 +108,11 @@ julia> lambertw(Complex(-10.0,3.0), 4)
 -0.9274337508660128 + 26.37693445371142im
 ```
 
-!!! note
-    The constant `LAMBERTW_USE_NAN` at the top of the source file controls whether arguments
-    outside the domain throw `DomainError` or return `NaN`. The default is `DomainError`.
 """
 function lambertw(x::Real, k::Integer)
     k == 0 && return lambertwk0(x)
     k == -1 && return _lambertwkm1(x)
-    @baddomain(k)  # more informative message like below ?
-#    error("lambertw: real x must have k == 0 or k == -1")
+    throw(DomainError(k, "lambertw: real x must have branch k == 0 or k == -1"))
 end
 
 function lambertw(x::Union{Integer,Rational}, k::Integer)
@@ -167,7 +163,7 @@ lambertw(z::Complex{T}, k::Integer) where T<:Integer = lambertw(float(z),k)
 #function lambertw(::Irrational{:e}, k::T) where T<:Integer
 function lambertw(::typeof(MathConstants.e), k::T) where T<:Integer
     k == 0 && return 1
-    @baddomain(k)
+    throw(DomainError(k))
 end
 
 # Maybe this should return a float
@@ -321,7 +317,7 @@ function wser(p,x)
     x < 5e-2 && return wser32(p)
     x < 1e-1 && return wser50(p)
     x < 1.9e-1 && return wser100(p)
-    x > 1/MathConstants.e && @baddomain(x)  # radius of convergence
+    x > 1/MathConstants.e && throw(DomainError(x))  # radius of convergence
     return wser290(p)  # good for x approx .32
 end
 
@@ -336,7 +332,7 @@ function wser(p::Complex{T},z) where T<:Real
     x < 5e-2 && return wser32(p)
     x < 1e-1 && return wser50(p)
     x < 1.9e-1 && return wser100(p)
-    x > 1/MathConstants.e && @baddomain(x)  # radius of convergence
+    x > 1/MathConstants.e && throw(DomainError(x))  # radius of convergence
     return wser290(p)
 end
 
