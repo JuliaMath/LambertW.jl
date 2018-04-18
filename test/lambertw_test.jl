@@ -111,7 +111,7 @@ end
 ###  expansion about branch point
 
 # not a domain error, but not implemented
-@test_throws ErrorException lambertwbp(1,1)
+@test_throws ArgumentError lambertwbp(1,1)
 
 @test_throws DomainError lambertw(.3,2)
 

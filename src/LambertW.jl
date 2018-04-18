@@ -7,7 +7,7 @@ export lambertw, lambertwbp
 
 using Compat
 
-import Compat.MathConstants
+import Compat.MathConstants  # For clarity, we use MathConstants.e for Euler's number
 
 const omega_const_bf_ = Ref{BigFloat}()
 
@@ -19,8 +19,8 @@ end
 
 #### Lambert W function ####
 
-# Use Halley's root-finding method to find x = lambertw(z) with
-# initial point x.
+# Use Halley's root-finding method to find
+# x = lambertw(z) with initial point x.
 function _lambertw(z::T, x::T, maxits) where T <: Number
     two_t = convert(T,2)
     lastx = x
@@ -46,13 +46,13 @@ end
 ### Real z ###
 
 # Real x, k = 0
-# This appears to be type stable with T=Float64 and T=BigFloat, including if x=Inf.
+# This appears to be inferrable with T=Float64 and T=BigFloat, including if x=Inf.
 # The fancy initial condition selection does not seem to help speed, but we leave it for now.
 function lambertwk0(x::T, maxits)::T where T<:AbstractFloat
     isnan(x) && return(NaN)
-    x == Inf && return Inf
+    x == Inf && return Inf # appears to return convert(BigFloat,Inf) for x == BigFloat(Inf)
     one_t = one(T)
-    oneoe = -one_t/convert(T,MathConstants.e)
+    oneoe = -one_t/convert(T,MathConstants.e)  # The branch point
     x == oneoe && return -one_t
     oneoe <= x || throw(DomainError(x))
     itwo_t = 1/convert(T,2)
