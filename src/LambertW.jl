@@ -221,7 +221,7 @@ Base.BigFloat(o::Irrational{:ω}) = omega_const(BigFloat)
 # (4.23) and (4.24) for all μ are also given. This code implements the
 # recursion relations.
 
-# (4.23) and (4.24) give zero based coefficients
+# (4.23) and (4.24) give zero based coefficients.
 cset(a,i,v) = a[i+1] = v
 cget(a,i) = a[i+1]
 
@@ -341,9 +341,9 @@ end
 """
     lambertwbp(z,k=0)
 
-Accurate value of `1 + W(-1/e + z)`, for `abs(z)` in `[0,1/e]` for `k` either `0` or `-1`.
-Accurate to Float64 precision for abs(z) < 0.32.
-If `k=-1` and `imag(z) < 0`, the value on the branch `k=1` is returned. `lambertwbp` is vectorized.
+Compute accurate value of `1 + W(-1/e + z)`, for `abs(z)` in `[0,1/e]` for `k` either `0` or `-1`.
+The result is accurate to Float64 precision for abs(z) < 0.32.
+If `k=-1` and `imag(z) < 0`, the value on the branch `k=1` is returned.
 
 ```jldoctest
 julia> lambertw(-1/e + 1e-18, -1)
@@ -365,7 +365,7 @@ julia> convert(Float64,(lambertw(-BigFloat(1)/e + BigFloat(10)^(-18),-1) + 1))
 function lambertwbp(x::Number,k::Integer)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
-    error("expansion about branch point only implemented for k = 0 and -1")
+    throw(error("expansion about branch point only implemented for k = 0 and -1"))
 end
 
 lambertwbp(x::Number) = _lambertw0(x)
