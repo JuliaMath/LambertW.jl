@@ -21,7 +21,7 @@ The LambertW.jl package is licensed under the MIT "Expat" License:
 > TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 > SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Some portions of this code are derived from SciPy and are licensed under
+Portions of this code are derived from SciPy and are licensed under
 the Scipy License:
 
 > Copyright (c) 2001, 2002 Enthought, Inc.
