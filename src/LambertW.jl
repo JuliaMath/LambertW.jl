@@ -154,7 +154,7 @@ end
 
 lambertw(z::Complex{T}, k::Integer) where T<:Integer = lambertw(float(z),k)
 lambertw(x::Number) = lambertw(x,0)
-lambertw(n::Irrational, args::Integer...) = lambertw(float(n),args...)
+lambertw(n::Irrational, k::Integer) = lambertw(float(n), k)
 
 # lambertw(e + 0im,k) is ok for all k
 # Maybe this should return a float. But, this should cause no type instability in any case
