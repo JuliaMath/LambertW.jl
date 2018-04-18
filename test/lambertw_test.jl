@@ -122,25 +122,24 @@ end
 if Int != Int32
 
 # Test expansion near branch point
-#    let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
-let sp = precision(BigFloat), z = BigFloat(1)/10^9, wo, diff
+let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, xdiff
     setprecision(2048)
     for i in 1:300
         innerarg = z-1/big(MathConstants.e)
 
         # branch k = 0
-        @test (wo = lambertwbp(Float64(z)); diff = abs(-1 + wo - lambertw(innerarg)); true)
-        if diff > 5e-16
-            println(Float64(z), " ", Float64(diff))
+        @test (wo = lambertwbp(Float64(z)); xdiff = abs(-1 + wo - lambertw(innerarg)); true)
+        if xdiff > 5e-16
+            println(Float64(z), " ", Float64(xdiff))
         end
-        @test diff < 5e-16
+        @test xdiff < 5e-16
 
         #  branch k = -1
-        @test (wo = lambertwbp(Float64(z),-1); diff = abs(-1 + wo - lambertw(innerarg,-1)); true)
-        if diff > 5e-16
-            println(Float64(z), " ", Float64(diff))
+        @test (wo = lambertwbp(Float64(z),-1); xdiff = abs(-1 + wo - lambertw(innerarg,-1)); true)
+        if xdiff > 5e-16
+            println(Float64(z), " ", Float64(xdiff))
         end
-        @test diff < 5e-16
+        @test xdiff < 5e-16
         z  *= 1.1
         if z > 0.23 break end
 

@@ -11,13 +11,10 @@ import Compat.MathConstants
 
 const omega_const_bf_ = Ref{BigFloat}()
 
-#const warncount = Int[0]
-
 function __init__()
     # allocate storage for this BigFloat constant each time this module is loaded
     omega_const_bf_[] =
         parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
-#    warncount[1] = 0
 end
 
 #### Lambert W function ####
@@ -26,7 +23,6 @@ end
 # initial point x.
 function _lambertw(z::T, x::T, maxits) where T <: Number
     two_t = convert(T,2)
-    xin = x
     lastx = x
     lastdiff = zero(T)
     converged::Bool = false
@@ -36,18 +32,14 @@ function _lambertw(z::T, x::T, maxits) where T <: Number
         x1 = x + 1
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
         xdiff = abs(lastx - x)
-        if xdiff <= 2*eps(abs(lastx)) || lastdiff == diff
+        if xdiff <= 3*eps(abs(lastx)) || lastdiff == xdiff  # second condition catches two-value cycle
             converged = true
             break
         end
         lastx = x
         lastdiff = xdiff
     end
-    converged || warn("lambertw with x=", xin, " did not converge in ", maxits, " iterations.")
-    # if ! converged
-    #     warncount[1] += 1
-    #     warn("lambertw did not converge in ", maxits, " iterations, ", warncount[1], " ", lastx)
-    # end
+    converged || warn("lambertw with z=", z, " did not converge in ", maxits, " iterations.")
     return x
 end
 
