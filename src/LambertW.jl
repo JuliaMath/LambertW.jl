@@ -18,33 +18,27 @@ end
 
 #### Lambert W function ####
 
-const LAMBERTW_USE_NAN = false
-
-# macro baddomain(v)
-#     if LAMBERTW_USE_NAN
-#         return :(return(NaN))
-#     else
-#         return esc(:(throw(DomainError($v))))
-#     end
-# end
-
 # Use Halley's root-finding method to find x = lambertw(z) with
 # initial point x.
-function _lambertw(z::T, x::T) where T <: Number
+function _lambertw(z::T, x::T, maxits=100) where T <: Number
     two_t = convert(T,2)
     lastx = x
     lastdiff = zero(T)
-    for i in 1:100
+    converged::Bool = false
+    for i in 1:maxits
         ex = exp(x)
         xexz = x * ex - z
         x1 = x + 1
         x = x - xexz / (ex * x1 - (x + two_t) * xexz / (two_t * x1 ) )
         xdiff = abs(lastx - x)
-        xdiff <= 2*eps(abs(lastx)) && break
-        lastdiff == diff && break
+        if xdiff <= 2*eps(abs(lastx)) || lastdiff == diff
+            converged = true
+            break
+        end
         lastx = x
         lastdiff = xdiff
     end
+    converged || warn("lambertw did not converge in ", maxits, " iterations.")
     x
 end
 
@@ -284,7 +278,8 @@ function horner(x, p::AbstractArray,n)
     n += 1
     ex = p[n]
     for i = n-1:-1:2
-        ex = :($(p[i]) + t * $ex)
+        ex = :(muladd(t, $ex, $(p[i])))
+#        ex = :($(p[i]) + t * $ex)
     end
     ex = :( t * $ex)
     Expr(:block, :(t = $x), ex)
