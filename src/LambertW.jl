@@ -21,7 +21,7 @@ end
 
 # Use Halley's root-finding method to find x = lambertw(z) with
 # initial point x.
-function _lambertw(z::T, x::T, maxits=100) where T <: Number
+function _lambertw(z::T, x::T, maxits) where T <: Number
     two_t = convert(T,2)
     lastx = x
     lastdiff = zero(T)
@@ -48,7 +48,7 @@ end
 # Real x, k = 0
 
 # The fancy initial condition selection does not seem to help speed, but we leave it for now.
-function lambertwk0(x::T)::T where T<:AbstractFloat
+function lambertwk0(x::T, maxits)::T where T<:AbstractFloat
     isnan(x) && return(NaN)
     x == Inf && return Inf
     one_t = one(T)
@@ -63,17 +63,17 @@ function lambertwk0(x::T)::T where T<:AbstractFloat
     else
         x1 = (567//1000) * x
     end
-    _lambertw(x,x1)
+    _lambertw(x, x1, maxits)
 end
 
 # Real x, k = -1
-function _lambertwkm1(x::T) where T<:Real
+function _lambertwkm1(x::T, maxits) where T<:Real
     oneoe = -one(T)/convert(T,MathConstants.e)
     x == oneoe && return -one(T)
     oneoe <= x || throw(DomainError(x))
     x == zero(T) && return -convert(T,Inf)
     x < zero(T) || throw(DomainError(x))
-    _lambertw(x,log(-x))
+    _lambertw(x, log(-x), maxits)
 end
 
 
@@ -104,24 +104,24 @@ julia> lambertw(Complex(-10.0,3.0), 4)
 ```
 
 """
-function lambertw(x::Real, k::Integer)
-    k == 0 && return lambertwk0(x)
-    k == -1 && return _lambertwkm1(x)
+function lambertw_(x::Real, k, maxits)
+    k == 0 && return lambertwk0(x, maxits)
+    k == -1 && return _lambertwkm1(x, maxits)
     throw(DomainError(k, "lambertw: real x must have branch k == 0 or k == -1"))
 end
 
-function lambertw(x::Union{Integer,Rational}, k::Integer)
+function lambertw_(x::Union{Integer,Rational}, k, maxits)
     if k == 0
         x == 0 && return float(zero(x))
-        x == 1 && return convert(typeof(float(x)),LambertW.omega) # must be more efficient way
+        x == 1 && return convert(typeof(float(x)), LambertW.omega) # must be a more efficient way
     end
-    lambertw(float(x),k)
+    lambertw_(float(x), k, maxits)
 end
 
 ### Complex z ###
 
 # choose initial value inside correct branch for root finding
-function lambertw(z::Complex{T}, k::Integer) where T<:Real
+function lambertw_(z::Complex{T}, k, maxits) where T<:Real
     one_t = one(T)
     local w::Complex{T}
     pointseven = 7//10
@@ -149,19 +149,20 @@ function lambertw(z::Complex{T}, k::Integer) where T<:Real
         w = log(z)
         k != 0 ? w += complex(0, 2*k*pi) : nothing
     end
-    _lambertw(z,w)
+    _lambertw(z, w, maxits)
 end
 
-lambertw(z::Complex{T}, k::Integer) where T<:Integer = lambertw(float(z),k)
-lambertw(x::Number) = lambertw(x,0)
-lambertw(n::Irrational, k::Integer) = lambertw(float(n), k)
+lambertw_(z::Complex{T}, k, maxits) where T<:Integer = lambertw_(float(z), k, maxits)
+lambertw_(n::Irrational, k, maxits) = lambertw_(float(n), k, maxits)
 
 # lambertw(e + 0im,k) is ok for all k
 # Maybe this should return a float. But, this should cause no type instability in any case
-function lambertw(::typeof(MathConstants.e), k::T=0) where T<:Integer
+function lambertw_(::typeof(MathConstants.e), k, maxits)
     k == 0 && return 1
     throw(DomainError(k))
 end
+
+lambertw(z, k::Integer=0, maxits::Integer=100) = lambertw_(z, k, maxits)
 
 ### omega constant ###
 
