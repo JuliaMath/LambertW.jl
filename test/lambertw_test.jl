@@ -2,20 +2,12 @@ using Compat
 
 import Compat.MathConstants
 
-macro test_baddomain(expr)
-    if LambertW.LAMBERTW_USE_NAN
-        :(@test $(esc(expr)) === NaN)
-    else
-        :(@test_throws DomainError $(esc(expr)))
-    end
-end
-
 ### domain errors
 
-@test_baddomain lambertw(-2.0,0)
-@test_baddomain lambertw(-2.0,-1)
-@test_baddomain lambertw(-2.0,1)
-@test_baddomain lambertw(NaN)
+@test_throws DomainError lambertw(-2.0,0)
+@test_throws DomainError lambertw(-2.0,-1)
+@test_throws DomainError lambertw(-2.0,1)
+@test isnan(lambertw(NaN))
 
 ## math constant e
 @test_baddomain lambertw(MathConstants.e,1)

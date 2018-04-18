@@ -54,6 +54,7 @@ end
 
 # The fancy initial condition selection does not seem to help speed, but we leave it for now.
 function lambertwk0(x::T)::T where T<:AbstractFloat
+    isnan(x) && return(NaN)
     x == Inf && return Inf
     one_t = one(T)
     oneoe = -one_t/convert(T,MathConstants.e)
