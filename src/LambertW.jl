@@ -274,12 +274,13 @@ end
 
 const LAMWMU_FLOAT64 = lamwcoeff(Float64,500)
 
-function horner(x, p::AbstractArray,n)
+# Base.Math.@horner requires literal coefficients
+# But, we have an array `p` of computed coefficients
+function horner(x, p::AbstractArray, n)
     n += 1
     ex = p[n]
     for i = n-1:-1:2
         ex = :(muladd(t, $ex, $(p[i])))
-#        ex = :($(p[i]) + t * $ex)
     end
     ex = :( t * $ex)
     Expr(:block, :(t = $x), ex)
