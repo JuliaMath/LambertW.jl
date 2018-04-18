@@ -98,9 +98,9 @@ end
 
 ## get ω from recursion and compare to value from lambertw
 let sp = precision(BigFloat)
-  @compat  setprecision(512)
+    setprecision(512)
     @test lambertw(big(1)) == big(LambertW.omega)
-  @compat  setprecision(sp)
+    setprecision(sp)
 end
 
 @test lambertw(1) == float(LambertW.omega)
@@ -122,7 +122,7 @@ end
 if Int != Int32
 
 let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
-  @compat  setprecision(2048)
+    setprecision(2048)
     for i in 1:300
         # k = 0
         @test (wo = lambertwbp(Float64(z)); diff = abs(-1 + wo - lambertw(z-1/big(MathConstants.e))); true)
@@ -139,7 +139,7 @@ let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, diff
         z  *= 1.1
         if z > 0.23 break end
     end
- @compat  setprecision(sp)
+    setprecision(sp)
 end
 
 # test the expansion about branch point for k=-1,

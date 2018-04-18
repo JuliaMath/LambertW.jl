@@ -172,7 +172,7 @@ const omega_const_ = 0.567143290409783872999968662210355
 
 # maybe compute higher precision. converges very quickly
 function omega_const(::Type{BigFloat})
-  @compat  precision(BigFloat) <= 256 && return omega_const_bf_[]
+    precision(BigFloat) <= 256 && return omega_const_bf_[]
     myeps = eps(BigFloat)
     oc = omega_const_bf_[]
     for i in 1:100
