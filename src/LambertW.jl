@@ -104,6 +104,8 @@ julia> lambertw(Complex(-10.0,3.0), 4)
 ```
 
 """
+lambertw(z, k::Integer=0, maxits::Integer=100) = lambertw_(z, k, maxits)
+
 function lambertw_(x::Real, k, maxits)
     k == 0 && return lambertwk0(x, maxits)
     k == -1 && return _lambertwkm1(x, maxits)
@@ -161,8 +163,6 @@ function lambertw_(::typeof(MathConstants.e), k, maxits)
     k == 0 && return 1
     throw(DomainError(k))
 end
-
-lambertw(z, k::Integer=0, maxits::Integer=100) = lambertw_(z, k, maxits)
 
 ### omega constant ###
 
