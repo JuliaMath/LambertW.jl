@@ -23,6 +23,7 @@ end
 # initial point x.
 function _lambertw(z::T, x::T, maxits) where T <: Number
     two_t = convert(T,2)
+    xin = x
     lastx = x
     lastdiff = zero(T)
     converged::Bool = false
@@ -39,7 +40,7 @@ function _lambertw(z::T, x::T, maxits) where T <: Number
         lastx = x
         lastdiff = xdiff
     end
-    converged || warn("lambertw did not converge in ", maxits, " iterations.")
+    converged || warn("lambertw with x=", xin, " did not converge in ", maxits, " iterations.")
     x
 end
 
@@ -104,7 +105,7 @@ julia> lambertw(Complex(-10.0,3.0), 4)
 ```
 
 """
-lambertw(z, k::Integer=0, maxits::Integer=100) = lambertw_(z, k, maxits)
+lambertw(z, k::Integer=0, maxits::Integer=1000) = lambertw_(z, k, maxits)
 
 function lambertw_(x::Real, k, maxits)
     k == 0 && return lambertwk0(x, maxits)
