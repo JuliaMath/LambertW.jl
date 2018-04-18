@@ -7,12 +7,7 @@ export lambertw, lambertwbp
 
 using Compat
 
-const euler =
-if isdefined(Base, :MathConstants)
-    Base.MathConstants.e
-else
-    e
-end
+import Compat.MathConstants
 
 const omega_const_bf_ = Ref{BigFloat}()
 
@@ -61,7 +56,7 @@ end
 function lambertwk0(x::T)::T where T<:AbstractFloat
     x == Inf && return Inf
     one_t = one(T)
-    oneoe = -one_t/convert(T,euler)
+    oneoe = -one_t/convert(T,MathConstants.e)
     x == oneoe && return -one_t
     itwo_t = 1/convert(T,2)
     oneoe <= x || @baddomain(x)
@@ -77,7 +72,7 @@ end
 
 # Real x, k = -1
 function _lambertwkm1(x::T) where T<:Real
-    oneoe = -one(T)/convert(T,euler)
+    oneoe = -one(T)/convert(T,MathConstants.e)
     x == oneoe && return -one(T)
     oneoe <= x || @baddomain(x)
     x == zero(T) && return -convert(T,Inf)
@@ -138,7 +133,7 @@ function lambertw(z::Complex{T}, k::Integer) where T<:Real
     one_t = one(T)
     local w::Complex{T}
     pointseven = 7//10
-    if abs(z) <= one_t/convert(T,euler)
+    if abs(z) <= one_t/convert(T,MathConstants.e)
         if z == 0
             k == 0 && return z
             return complex(-convert(T,Inf),zero(T))
@@ -169,13 +164,13 @@ lambertw(z::Complex{T}, k::Integer) where T<:Integer = lambertw(float(z),k)
 
 # lambertw(e + 0im,k) is ok for all k
 #function lambertw(::Irrational{:e}, k::T) where T<:Integer
-function lambertw(::typeof(euler), k::T) where T<:Integer
+function lambertw(::typeof(MathConstants.e), k::T) where T<:Integer
     k == 0 && return 1
     @baddomain(k)
 end
 
 # Maybe this should return a float
-lambertw(::typeof(euler)) = 1
+lambertw(::typeof(MathConstants.e)) = 1
 #lambertw(::Irrational{:e}) = 1
 
 #lambertw{T<:Number}(x::T) = lambertw(x,0)
@@ -325,7 +320,7 @@ function wser(p,x)
     x < 5e-2 && return wser32(p)
     x < 1e-1 && return wser50(p)
     x < 1.9e-1 && return wser100(p)
-    x > 1/euler && @baddomain(x)  # radius of convergence
+    x > 1/MathConstants.e && @baddomain(x)  # radius of convergence
     return wser290(p)  # good for x approx .32
 end
 
@@ -340,18 +335,18 @@ function wser(p::Complex{T},z) where T<:Real
     x < 5e-2 && return wser32(p)
     x < 1e-1 && return wser50(p)
     x < 1.9e-1 && return wser100(p)
-    x > 1/euler && @baddomain(x)  # radius of convergence
+    x > 1/MathConstants.e && @baddomain(x)  # radius of convergence
     return wser290(p)
 end
 
 @inline function _lambertw0(x) # 1 + W(-1/e + x)  , k = 0
-    ps = 2*euler*x;
+    ps = 2*MathConstants.e*x;
     p = sqrt(ps)
     wser(p,x)
 end
 
 @inline function _lambertwm1(x) # 1 + W(-1/e + x)  , k = -1
-    ps = 2*euler*x;
+    ps = 2*MathConstants.e*x;
     p = -sqrt(ps)
     wser(p,x)
 end
