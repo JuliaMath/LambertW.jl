@@ -157,16 +157,3 @@ end
 @test abs(lambertwbp(Complex(.01,.01),-1) - Complex(-0.2755038208041206, -0.1277888928494641)) < 1e-14
 
 end
-
-## vectorization
-
-if VERSION >= v"0.5"
-    @test lambertw.([0.1,0.2]) == [lambertw(0.1),lambertw(0.2)]
-    @test lambertw.([0.1+im ,0.2-im]) == [lambertw(0.1+im),lambertw(0.2-im)]
-    @test lambertw.([0.1,-0.2],[0,-1]) == [lambertw(0.1,0),lambertw(-0.2,-1)]
-    @test lambertwbp.([.1,.2,.3],-1) == map(x -> lambertwbp(x,-1), [.1,.2,.3])
-else
-    @test lambertw([0.1,0.2]) == [lambertw(0.1),lambertw(0.2)]
-    @test lambertw([0.1+im ,0.2-im]) == [lambertw(0.1+im),lambertw(0.2-im)]
-    @test lambertw([0.1,-0.2],[0,-1]) == [lambertw(0.1,0),lambertw(-0.2,-1)]
-end
