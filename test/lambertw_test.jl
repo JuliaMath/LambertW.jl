@@ -121,7 +121,7 @@ end
 
 if Int != Int32
 
-# Test expansion near branch point
+# Test double-precision expansion near branch point using BigFloats
 let sp = precision(BigFloat), z = BigFloat(1)/10^12, wo, xdiff
     setprecision(2048)
     for i in 1:300
@@ -153,4 +153,4 @@ end
 
 @test abs(lambertwbp(Complex(.01,.01),-1) - Complex(-0.2755038208041206, -0.1277888928494641)) < 1e-14
 
-end
+end  # if Int != Int32
