@@ -11,6 +11,7 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jla
 [![LambertW](http://pkg.julialang.org/badges/LambertW_0.5.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.5)
 [![LambertW](http://pkg.julialang.org/badges/LambertW_0.6.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.6)
 
+
 ### lambertw
 
 The [Lambert W function](http://en.wikipedia.org/wiki/Lambert_W_function),
@@ -60,6 +61,17 @@ julia> lambertwbp(0)
 `lambertwbp` uses a series expansion about the branch point `z=-1/e`.
 The loss of precision in `lambertw` is analogous to the loss of precision
 in computing the `sqrt(1-x)` for `x` close to `1`.
+
+### LambertW.finv(lambertw)
+
+The functional inverse of the Lambert W function.
+```
+julia> finv(lambertw)(lambertw(1.0))
+1.0
+
+julia> finv(lambertw)(lambertw(1+im/2,3))
+1.0 + 0.49999999999999944im
+```
 
 ### omega constant
 

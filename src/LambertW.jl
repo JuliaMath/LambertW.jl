@@ -17,6 +17,15 @@ function __init__()
         parse(BigFloat,"0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
 end
 
+#### Inverse of Lambert W function ####
+
+"""
+    finv(::typeof(lambertw)) -> Function
+
+return the functional inverse of the Lambert W function.
+"""
+finv(::typeof(lambertw)) = z -> z * exp(z)
+
 #### Lambert W function ####
 
 # Use Halley's root-finding method to find
