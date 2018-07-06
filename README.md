@@ -8,8 +8,7 @@ Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jla
 [![Coverage Status](https://coveralls.io/repos/github/jlapeyre/LambertW.jl/badge.svg?branch=master)](https://coveralls.io/github/jlapeyre/LambertW.jl?branch=master)
 [![codecov.io](http://codecov.io/github/jlapeyre/LambertW.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/LambertW.jl?branch=master)
 
-[![LambertW](http://pkg.julialang.org/badges/LambertW_0.5.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.5)
-[![LambertW](http://pkg.julialang.org/badges/LambertW_0.6.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.6)
+<!-- [![LambertW](http://pkg.julialang.org/badges/LambertW_0.6.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.6) -->
 
 
 ### lambertw

@@ -1,4 +1,4 @@
 using LambertW
-using Base.Test
+using Test
 
 include("lambertw_test.jl")
