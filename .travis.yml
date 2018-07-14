@@ -1,10 +1,22 @@
 language: julia
+
 os:
   - linux
   - osx
+  
 julia:
   - nightly
+  
+matrix:
+  allow_failures:
+    - julia: nightly
+  
 notifications:
   email: false
+  
+script:
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia -e 'using Pkg; Pkg.test("LambertW"; coverage=true)'
+  
 after_success: 
   - julia -e 'Pkg.add("Coverage"); cd(Pkg.dir("LambertW")); using Coverage; Coveralls.submit(process_folder()); Codecov.submit(process_folder())'
