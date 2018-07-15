@@ -1,7 +1,8 @@
 name = "LambertW"
 uuid = "984bce1d-4616-540c-a9ee-88d1112d94c9"
+desc = "Lambert W function and associated omega constant"
+license = "MIT"
 authors = ["J Lapeyre"]
-version = "0.4.1"
+version = "0.4.0"
 
 [deps]
-Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
