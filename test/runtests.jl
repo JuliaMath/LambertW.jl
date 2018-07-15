@@ -1,4 +1,6 @@
 using LambertW
 using Test
 
-include("lambertw_test.jl")
+@testset "LambertW.jl" begin
+  include("lambertw_test.jl")
+end
