@@ -4,3 +4,6 @@ authors = ["J Lapeyre"]
 version = "0.4.1"
 license = "MIT"
 uuid = "984bce1d-4616-540c-a9ee-88d1112d94c9"
+
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
