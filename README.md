@@ -88,13 +88,15 @@ julia> ω * exp(ω)
 
 julia> big(ω)
 5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01 with 256 bits of precision
+
+julia> lambertw(1) == float(ω)
+true
 ```
+<!-- ### Notes -->
 
-### Notes
-
-Both `lambertw` and `lambertwbp` throw `DomainErrors` rather than return `NaN`s.
-This behavior is reversed by setting `LAMBERTW_USE_NAN=true` at the top of
-the source file `lambertw.jl`.
+<!-- Both `lambertw` and `lambertwbp` throw `DomainErrors` rather than return `NaN`s. -->
+<!-- This behavior is reversed by setting `LAMBERTW_USE_NAN=true` at the top of -->
+<!-- the source file `lambertw.jl`. -->
  
 <!--  LocalWords:  lambertw jacobisymbol julia ulia im eval LambertW
  -->
