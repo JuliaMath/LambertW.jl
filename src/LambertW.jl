@@ -71,7 +71,7 @@ end
 # This appears to be inferrable with T=Float64 and T=BigFloat, including if x=Inf.
 # There is a magic number here. It could be noted, or possibly removed.
 # In particular, the fancy initial condition selection does not seem to help speed.
-function lambertw_branch_zero(x::T, maxits)::T where T<:AbstractFloat
+function lambertw_branch_zero(x::T, maxits)::T where T<:Real
     isnan(x) && return(NaN)
     x == Inf && return Inf # appears to return convert(BigFloat, Inf) for x == BigFloat(Inf)
     one_t = one(T)
