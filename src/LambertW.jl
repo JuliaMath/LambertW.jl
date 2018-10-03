@@ -40,7 +40,7 @@ julia> lambertw(Complex(-10.0, 3.0), 4)
 -0.9274337508660128 + 26.37693445371142im
 ```
 """
-lambertw(z, k::Integer=0, maxits::Integer=1000) = _lambertw(z, k, maxits)
+lambertw(z, k::Integer=0, maxits::Integer=1000) = _lambertw(float(z), k, maxits)
 
 # lambertw(e + 0im, k) is ok for all k
 # Maybe this should return a float. But, this should cause no type instability in any case
