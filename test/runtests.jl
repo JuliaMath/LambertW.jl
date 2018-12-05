@@ -1,4 +1,5 @@
 using LambertW
+using LambertW: lambertwbranchpoint
 using Test
 
 @testset "exceptions" begin
@@ -35,7 +36,8 @@ end
         z = BigFloat(1)/10^12
         setprecision(2048)
         for i in 1:300
-            innerarg = z-1/big(MathConstants.e)
+#            innerarg = z - 1 / big(MathConstants.e)
+            innerarg = z + lambertwbranchpoint
             # branch k = 0
             wo = lambertwbp(Float64(z))
             xdiff = abs(-1 + wo - lambertw(innerarg))
@@ -74,4 +76,14 @@ end
     @test lambertw(complex(Inf, 0), 1) == complex(Inf, 2pi)
     @test lambertw(complex(-Inf, 0), 1) == complex(Inf, 3pi)
     @test lambertw(complex(0.0, 0.0), -1) == complex(-Inf, 0.0)
+end
+
+## value at branch point where real branches meet
+@testset "at branch point" begin
+    k0val = lambertw(lambertwbranchpoint, 0)
+    km1val = lambertw(lambertwbranchpoint, -1)
+    @test k0val == -1.0
+    @test km1val == -1.0
+    @test k0val isa Float64
+    @test km1val isa Float64
 end

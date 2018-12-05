@@ -1,6 +1,16 @@
+"""
+    module LambertW
+
+This module computes the Lambert W function,
+or product log function,
+and related quantities.
+
+Functions: `lambertw`, `lambertwbp`, `finv`
+
+Constants: `omega`, `lambertwbranchpoint`
+"""
 module LambertW
 
-import Base: convert
 export lambertw, lambertwbp
 
 const omega_const_bf_ = Ref{BigFloat}()
@@ -372,6 +382,7 @@ This function is faster and more accurate near the branch point `-1/e` between `
 The result is accurate to Float64 precision for abs(z) < 0.32.
 If `k=-1` and `imag(z) < 0`, the value on the branch `k=1` is returned.
 
+# Example
 ```jldoctest
 julia> lambertw(-1/e + 1e-18, -1)
 -1.0

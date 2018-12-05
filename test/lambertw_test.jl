@@ -6,12 +6,9 @@
 ### math constant, MathConstants.e e
 
 # could return math const e, but this would break type stability
-@test typeof(lambertw(1)) <: AbstractFloat
+@test lambertw(1) isa AbstractFloat
 @test lambertw(MathConstants.e, 0) == 1
 
-## value at branch point where real branches meet
-@test lambertw(-1/MathConstants.e, 0) == lambertw(-1/MathConstants.e, -1) == -1
-@test typeof(lambertw(-1/MathConstants.e, 0)) == typeof(lambertw(-1/MathConstants.e, -1)) <: AbstractFloat
 
 ## convert irrationals to float
 
