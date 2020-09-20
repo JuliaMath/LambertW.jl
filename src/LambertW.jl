@@ -204,7 +204,7 @@ julia> finv(lambertw)(lambertw(1))
 1.0
 ```
 """
-finv(::typeof(lambertw)) = z -> z * exp(z)
+finv(::typeof(lambertw)) = W -> W * exp(W)
 
 ### omega constant
 
