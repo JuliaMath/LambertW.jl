@@ -110,7 +110,7 @@ function lambertw_branch_zero(x::T, maxits)::T where T<:Real
     if x > one_t
         lx = log(x)
         llx = log(lx)
-        x0 = lx - llx - log(one_t - llx / lx) * itwo_t
+        x0 = lx - llx - log1p( - llx / lx) * itwo_t
     else
         x0 = (567//1000) * x
     end
