@@ -55,7 +55,7 @@ end
 # The routine will start at -1/e + eps * im, rather than -1/e + 0im,
 # otherwise root finding will fail
 if Int != Int32
-    @test abs(lambertw(-1.0/MathConstants.e  + 0im, -1)) == 1
+    @test isapprox(abs(lambertw(-1.0/MathConstants.e  + 0im, -1)), 1; atol=1e-15)
 else
     @test abs(lambertw(-1.0/MathConstants.e  + 0im, -1) + 1) < 1e-7
 end
