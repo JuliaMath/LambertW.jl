@@ -78,7 +78,7 @@ function _lambertw(::typeof(MathConstants.e), k, maxits)
     k == 0 && return 1
     throw(DomainError(k))
 end
-_lambertw(x::Irrational, k, maxits) = _lambertw(float(x), k, maxits)
+_lambertw(x::AbstractIrrational, k, maxits) = _lambertw(float(x), k, maxits)
 function _lambertw(x::Union{Integer, Rational}, k, maxits)
     if k == 0
         x == 0 && return float(zero(x))
