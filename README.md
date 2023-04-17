@@ -1,15 +1,12 @@
 # LambertW
 ### Lambert W function and associated omega constant
 
-Linux, OSX: [![Build Status](https://travis-ci.org/jlapeyre/LambertW.jl.svg)](https://travis-ci.org/jlapeyre/LambertW.jl)
-&nbsp;
-Windows: [![Build Status](https://ci.appveyor.com/api/projects/status/github/jlapeyre/LambertW.jl?branch=master&svg=true)](https://ci.appveyor.com/project/jlapeyre/lambertw-jl)
-&nbsp; &nbsp; &nbsp;
+[![Build Status](https://github.com/jlapeyre/GraphsExt.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/jlapeyre/GraphsExt.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/jlapeyre/LambertW.jl?branch=master&svg=true)](https://ci.appveyor.com/project/jlapeyre/lambertw-jl)
 [![Coverage Status](https://coveralls.io/repos/github/jlapeyre/LambertW.jl/badge.svg?branch=master)](https://coveralls.io/github/jlapeyre/LambertW.jl?branch=master)
 [![codecov.io](http://codecov.io/github/jlapeyre/LambertW.jl/coverage.svg?branch=master)](http://codecov.io/github/jlapeyre/LambertW.jl?branch=master)
-
-<!-- [![LambertW](http://pkg.julialang.org/badges/LambertW_0.6.svg)](http://pkg.julialang.org/?pkg=LambertW&ver=0.6) -->
-
+[![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
+[![JET QA](https://img.shields.io/badge/JET.jl-%E2%9C%88%EF%B8%8F-%23aa4444)](https://github.com/aviatesk/JET.jl)
 
 ### lambertw
 
