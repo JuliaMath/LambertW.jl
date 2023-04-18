@@ -3,9 +3,13 @@ uuid = "984bce1d-4616-540c-a9ee-88d1112d94c9"
 license = "MIT"
 desc = "Lambert W function and associated omega constant"
 authors = ["J Lapeyre"]
-version = "0.4.6"
+version = "0.4.7"
+
+[deps]
+IrrationalConstants = "92d709cd-6900-40b7-9082-c6be49f344b6"
 
 [compat]
+IrrationalConstants = "0.2.1"
 julia = "1"
 
 [extras]
