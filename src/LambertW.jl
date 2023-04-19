@@ -209,6 +209,8 @@ finv(::typeof(lambertw)) = W -> W * exp(W)
 
 ### omega constant
 
+const _omega_const = 0.567143290409783872999968662210355
+
 # The BigFloat `omega_const_bf_` is set via a literal in the function __init__ to prevent a segfault
 
 # compute omega constant via root finding
@@ -225,8 +227,8 @@ function omega_const(::Type{BigFloat})
     return oc
 end
 
-IrrationalConstants.@irrational ω 0.567143290409783872999968662210355 omega_const(BigFloat)
-@doc """
+struct Omega <: IrrationalConstants.IrrationalConstant end
+"""
     omega
     ω
 
@@ -247,8 +249,13 @@ julia> big(omega)
 5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01
 ```
 """
-ω
+const ω = Omega()
 const omega = ω
+Base.Float64(::Omega) = _omega_const
+Base.Float32(::Omega) = Float32(_omega_const)
+Base.BigFloat(::Omega) = omega_const(BigFloat)
+Base.show(io::IO, ::Omega) = print(io, :ω)
+
 
 ### Expansion about branch point x = -1/e
 
