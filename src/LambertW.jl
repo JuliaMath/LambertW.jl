@@ -11,6 +11,8 @@ Constants: `omega`, `lambertwbranchpoint`
 """
 module LambertW
 
+import IrrationalConstants
+
 export lambertw, lambertwbp
 
 const omega_const_bf_ = Ref{BigFloat}()
@@ -21,21 +23,20 @@ function __init__()
         parse(BigFloat, "0.5671432904097838729999686622103555497538157871865125081351310792230457930866845666932194")
 end
 
-Base.@irrational lambertwbranchpoint -0.367879441171442321595 -big(1)/exp(big(1))
+IrrationalConstants.@irrational lambertwbranchpoint -0.367879441171442321595 -big(1)/exp(big(1))
 
 @doc """
-        lambertbranchpoint::Irrational
+    lambertbranchpoint::IrrationalConstants.IrrationalConstant
 
 The branchpoint of the branches `k = 0` and `k = -1`, `-1/e`.
 
 # Example
-```julia-repl
-julia> import LambertW.lambertwbranchpoint
 
-julia> lambertw(lambertwbranchpoint, 0)
+```jldoctest
+julia> lambertw(LambertW.lambertwbranchpoint, 0)
 -1.0
 
-julia> lambertw(lambertwbranchpoint, -1)
+julia> lambertw(LambertW.lambertwbranchpoint, -1)
 -1.0
 ```
 """ lambertwbranchpoint
@@ -226,6 +227,7 @@ function omega_const(::Type{BigFloat})
     return oc
 end
 
+struct Omega <: IrrationalConstants.IrrationalConstant end
 """
     omega
     ω
@@ -247,13 +249,21 @@ julia> big(omega)
 5.67143290409783872999968662210355549753815787186512508135131079223045793086683e-01
 ```
 """
-const ω = Irrational{:ω}()
-@doc (@doc ω) omega = ω
+const ω = Omega()
+const omega = ω
+Base.Float64(::Omega) = _omega_const
+Base.Float32(::Omega) = Float32(_omega_const)
+if VERSION < v"1.1.0-DEV.683"
+    Base.BigFloat(::Omega) = omega_const(BigFloat)
+else
+    function Base.BigFloat(::Omega; precision=precision(BigFloat))
+        setprecision(BigFloat, precision) do
+            omega_const(BigFloat)
+        end
+    end
+end
+Base.show(io::IO, ::Omega) = print(io, :ω)
 
-Base.Float64(::Irrational{:ω}) = _omega_const
-Base.Float32(::Irrational{:ω}) = Float32(_omega_const)
-Base.Float16(::Irrational{:ω}) = Float16(_omega_const)
-Base.BigFloat(::Irrational{:ω}) = omega_const(BigFloat)
 
 ### Expansion about branch point x = -1/e
 
