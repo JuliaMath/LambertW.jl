@@ -209,8 +209,6 @@ finv(::typeof(lambertw)) = W -> W * exp(W)
 
 ### omega constant
 
-const _omega_const = 0.567143290409783872999968662210355
-
 # The BigFloat `omega_const_bf_` is set via a literal in the function __init__ to prevent a segfault
 
 # compute omega constant via root finding
@@ -227,7 +225,7 @@ function omega_const(::Type{BigFloat})
     return oc
 end
 
-IrrationalConstants.@irrational ω _omega_const omega_const(BigFloat)
+IrrationalConstants.@irrational ω 0.567143290409783872999968662210355 omega_const(BigFloat)
 @doc """
     omega
     ω
