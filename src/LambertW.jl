@@ -253,7 +253,15 @@ const ω = Omega()
 const omega = ω
 Base.Float64(::Omega) = _omega_const
 Base.Float32(::Omega) = Float32(_omega_const)
-Base.BigFloat(::Omega) = omega_const(BigFloat)
+if VERSION < v"1.1.0-DEV.683"
+    Base.BigFloat(::Omega) = omega_const(BigFloat)
+else
+    function Base.BigFloat(::Omega; precision=precision(BigFloat))
+        setprecision(BigFloat, precision) do
+            omega_const(BigFloat)
+        end
+    end
+end
 Base.show(io::IO, ::Omega) = print(io, :ω)
 
 
