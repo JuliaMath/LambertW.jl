@@ -28,7 +28,7 @@ IrrationalConstants.@irrational lambertwbranchpoint -0.367879441171442321595 -bi
 @doc """
     lambertbranchpoint::IrrationalConstants.IrrationalConstant
 
-The branchpoint of the branches `k = 0` and `k = -1`, `-1/e`.
+The branchpoint of the branches `k = 0` and `k = -1`, `-1/e` of the Lambert W function.
 
 # Example
 
@@ -41,24 +41,25 @@ julia> lambertw(LambertW.lambertwbranchpoint, -1)
 ```
 """ lambertwbranchpoint
 
-#@doc "hi" lambertbranchpoint
-
 ### Lambert W function
 
 """
-    lambertw(z::Complex{T}, k::V=0) where {T<:Real, V<:Integer}
-    lambertw(z::T, k::V=0) where {T<:Real, V<:Integer}
+    lambertw(z, k::Integer=0, maxits::Integer=1000)
 
-Compute the `k`th branch of the Lambert W function of `z`. If `z` is real, `k` must be
-either `0` or `-1`. For `Real` `z`, the domain of the branch `k = -1` is `[-1/e, 0]` and the
-domain of the branch `k = 0` is `[-1/e, Inf]`. For `Complex` `z`, and all `k`, the domain is
-the complex plane.
+Compute the `k`th branch of the Lambert W function of `z`.
 
+If `z` is real, `k` must be either `0` or `-1`. For `Real` `z`, the domain of the branch
+`k = -1` is `[-1/e, 0]` and the domain of the branch `k = 0` is `[-1/e, Inf]`. For
+`Complex` `z`, and all `k`, the domain is the complex plane.
+
+The result is computed via a root-finding loop. If the number of iterations is greater
+than or equal to `maxits`, a warning is printed (or logged). In testing, this has never
+been observed.
 ```jldoctest
-julia> lambertw(-1/e, -1)
+julia> lambertw(-1/MathConstants.e, -1)
 -1.0
 
-julia> lambertw(-1/e, 0)
+julia> lambertw(-1/MathConstants.e, 0)
 -1.0
 
 julia> lambertw(0, 0)
@@ -74,19 +75,6 @@ julia> lambertw(Complex(-10.0, 3.0), 4)
 lambertw(z, k::Integer=0, maxits::Integer=1000) = _lambertw(float(z), k, maxits)
 
 # lambertw(e + 0im, k) is ok for all k
-# Maybe this should return a float. But, this should cause no type instability in any case
-function _lambertw(::typeof(MathConstants.e), k, maxits)
-    k == 0 && return 1
-    throw(DomainError(k))
-end
-_lambertw(x::AbstractIrrational, k, maxits) = _lambertw(float(x), k, maxits)
-function _lambertw(x::Union{Integer, Rational}, k, maxits)
-    if k == 0
-        x == 0 && return float(zero(x))
-        x == 1 && return convert(typeof(float(x)), LambertW.omega) # must be a more efficient way
-    end
-    return _lambertw(float(x), k, maxits)
-end
 
 ### Real z
 
@@ -130,11 +118,9 @@ end
 
 ### Complex z
 
-_lambertw(z::Complex{<:Integer}, k, maxits) = _lambertw(float(z), k, maxits)
 # choose initial value inside correct branch for root finding
-function _lambertw(z::Complex{T}, k, maxits) where T<:Real
+function _lambertw(z::Complex{T}, k::Integer, maxits::Integer) where T<:Real
     one_t = one(T)
-    local w::Complex{T}
     pointseven = 7//10
     if abs(z) <= one_t/convert(T, MathConstants.e)
         if z == 0
@@ -147,7 +133,7 @@ function _lambertw(z::Complex{T}, k, maxits) where T<:Real
             w = complex(log(-real(z)), 1//10^7) # need offset for z ≈ -1/e.
         else
             w = log(z)
-            k != 0 ? w += complex(0, k * 2 * pi) : nothing
+            w += complex(0, k * 2 * pi)
         end
     elseif k == 0 && imag(z) <= pointseven && abs(z) <= pointseven
         w = abs(z+ 1//2) < 1//10 ? imag(z) > 0 ? complex(pointseven, pointseven) : complex(pointseven, -pointseven) : z
@@ -173,7 +159,7 @@ function lambertw_root_finding(z::T, x0::T, maxits) where T <: Number
     lastx = x
     lastdiff = zero(T)
     converged::Bool = false
-    for i in 1:maxits
+    for _ in 1:maxits
         ex = exp(x)
         xexz = x * ex - z
         x1 = x + 1
@@ -192,6 +178,9 @@ end
 
 ### Inverse of Lambert W function
 
+# I had an Idea promote the use of `finv`, maybe put it in Base.
+# Got zero interest. In the meantime a package has appeared to do this.
+# It might be a good idea to remove this and use the package... `InverseFunctions`.
 """
     finv(::typeof(lambertw)) -> Function
 
@@ -358,7 +347,7 @@ function branch_point_series(p, x)
 end
 
 # These may need tuning.
-function branch_point_series(p::Complex{T}, z) where T<:Real
+function branch_point_series(p::Complex{<:Real}, z)
     x = abs(z)
     x < 4e-11 && return wser3(p)
     x < 1e-5 && return wser7(p)
@@ -410,11 +399,10 @@ julia> convert(Float64, (lambertw(-BigFloat(1)/e + BigFloat(10)^(-18), -1) + 1))
     The loss of precision in `lambertw` is analogous to the loss of precision
     in computing the `sqrt(1-x)` for `x` close to `1`.
 """
-function lambertwbp(x::Number, k::Integer)
+function lambertwbp(x::Number, k::Integer=0)
     k == 0 && return _lambertw0(x)
     k == -1 && return _lambertwm1(x)
     throw(ArgumentError("expansion about branch point only implemented for k = 0 and -1."))
 end
-lambertwbp(x::Number) = _lambertw0(x)
 
 end #module
