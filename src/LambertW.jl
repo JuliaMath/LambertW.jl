@@ -13,7 +13,7 @@ module LambertW
 
 import IrrationalConstants
 
-export lambertw, lambertwbp
+export lambertw, lambertwbp, lambertw_check_convergence
 
 const omega_const_bf_ = Ref{BigFloat}()
 
@@ -52,9 +52,11 @@ If `z` is real, `k` must be either `0` or `-1`. For `Real` `z`, the domain of th
 `k = -1` is `[-1/e, 0]` and the domain of the branch `k = 0` is `[-1/e, Inf]`. For
 `Complex` `z`, and all `k`, the domain is the complex plane.
 
-The result is computed via a root-finding loop. If the number of iterations is greater
-than or equal to `maxits`, a warning is printed (or logged). In testing, this has never
-been observed.
+The result is computed via a root-finding loop. The loop exits early, without warning, if
+the number of iterations exceeds `maxits`. This will probably never happen However, if you
+want to be more careful, call `lambertw_check_convergence` instead.  The latter function
+returns the result if `maxits` was not reached, and otherwise throws an error.
+
 ```jldoctest
 julia> lambertw(-1/MathConstants.e, -1)
 -1.0
@@ -72,7 +74,23 @@ julia> lambertw(Complex(-10.0, 3.0), 4)
 -0.9274337508660128 + 26.37693445371142im
 ```
 """
-lambertw(z, k::Integer=0, maxits::Integer=1000) = _lambertw(float(z), k, maxits)
+lambertw(z, k::Integer=0, maxits::Integer=1000) = _lambertw(float(z), k, maxits)[1]
+
+"""
+    lambertw_check_convergence(z, k::Integer=0, maxits::Integer=1000)
+
+This is the same as `lambertw` except that if the root finding fails to converge in `maxits` iterations,
+an error is thrown.
+"""
+function lambertw_check_convergence(z, k::Integer=0, maxits::Integer=1000)
+    (w, converged) = _lambertw(float(z), k, maxits)
+    if ! converged
+        error("lambertw failed to converge in $maxits iterations")
+    end
+    w
+end
+
+#lambertw(z, k::Integer=0, maxits::Integer=1000) = _lambertw(float(z), k, maxits)
 
 # lambertw(e + 0im, k) is ok for all k
 
@@ -88,7 +106,7 @@ end
 # This appears to be inferrable with T=Float64 and T=BigFloat, including if x=Inf.
 # There is a magic number here. It could be noted, or possibly removed.
 # In particular, the fancy initial condition selection does not seem to help speed.
-function lambertw_branch_zero(x::T, maxits)::T where T<:Real
+function lambertw_branch_zero(x::T, maxits) where T<:Real
     isnan(x) && return(NaN)
     x == Inf && return Inf # appears to return convert(BigFloat, Inf) for x == BigFloat(Inf)
     one_t = one(T)
@@ -172,8 +190,7 @@ function lambertw_root_finding(z::T, x0::T, maxits) where T <: Number
         lastx = x
         lastdiff = xdiff
     end
-    converged || @warn("lambertw with z=", z, " did not converge in ", maxits, " iterations.")
-    return x
+    return (x, converged)
 end
 
 ### Inverse of Lambert W function
