@@ -188,6 +188,15 @@ end
     @test string(LambertW.Omega()) == "ω"
 end
 
-@testset "lambertw_check_convergence" begin
-    @test lambertw_check_convergence(1.0) == lambertw(1.0)
+@testset "lambertw info" begin
+    result = lambertw(1.0; info=true)
+    @test result[1] == lambertw(1.0)
+    @test result[2]
+    @test result[3] > 1 && result[3] < 10
+
+    for z in (10., complex(10), lambertwbranchpoint)
+        res = lambertw(1.0; info=true)
+        @test res[2]
+        @test length(res) == 3
+    end
 end

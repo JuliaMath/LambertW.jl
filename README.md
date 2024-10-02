@@ -14,7 +14,7 @@ also called the omega function or product logarithm.
 ```julia
 lambertw(z,k)   # Lambert W function for argument z and branch index k
 lambertw(z)     # the same as lambertw(z,0)
-lambertw_check_convergence(z, k=0) # The same as above but throw an error if the computation failed to converge
+lambertw(z; info=true) # Return a 3-tuple that includes convergence information.
 ```
 
 `z` may be Complex or Real. `k` must be an integer. For Real
@@ -36,7 +36,7 @@ julia> lambertw(-pi/2 + 0im)  / pi
 4.6681174759251105e-18 + 0.5im
 ```
 
-#### Note on `lambertw_check_convergence`
+#### Note on `info=true`
 
 You can use this for extra safety. But I have been unable to find any input for which the root finding fails to
 converge quickly.
