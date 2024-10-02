@@ -52,10 +52,11 @@ If `z` is real, `k` must be either `0` or `-1`. For `Real` `z`, the domain of th
 `k = -1` is `[-1/e, 0]` and the domain of the branch `k = 0` is `[-1/e, Inf]`. For
 `Complex` `z`, and all `k`, the domain is the complex plane.
 
-The result is computed via a root-finding loop. The loop exits early, without warning, if
-the number of iterations exceeds `maxits`. This will probably never happen However, if you
-want to be more careful, call `lambertw_check_convergence` instead.  The latter function
-returns the result if `maxits` was not reached, and otherwise throws an error.
+The result is computed via a root-finding loop. If the number of iterations exceeds
+`maxits`, then the loop exits early, returning a result without warning about the failure
+to converge.  This will probably never happen. However, if you want to be more careful,
+call `lambertw_check_convergence` instead.  The latter function returns the result if
+`maxits` was not reached, and otherwise throws an error.
 
 ```jldoctest
 julia> lambertw(-1/MathConstants.e, -1)

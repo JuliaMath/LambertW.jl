@@ -187,3 +187,7 @@ end
 @testset "show" begin
     @test string(LambertW.Omega()) == "ω"
 end
+
+@testset "lambertw_check_convergence" begin
+    @test lambertw_check_convergence(1.0) == lambertw(1.0)
+end
