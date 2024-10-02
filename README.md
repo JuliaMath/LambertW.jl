@@ -2,9 +2,9 @@
 ### Lambert W function and associated omega constant
 
 [![Build Status](https://github.com/JuliaMath/LambertW.jl/actions/workflows/CI.yml/badge.svg?branch=master)](https://github.com/JuliaMath/LambertW.jl/actions/workflows/CI.yml?query=branch%3Amaster)
-[![codecov.io](http://codecov.io/github/JuliaMath/LambertW.jl/coverage.svg?branch=master)](http://codecov.io/github/JuliaMath/LambertW.jl?branch=master)
+[![Codecov](https://codecov.io/gh/JuliaMath/LambertW.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaMath/LambertW.jl)
 [![Aqua QA](https://raw.githubusercontent.com/JuliaTesting/Aqua.jl/master/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
-[![JET QA](https://img.shields.io/badge/JET.jl-%E2%9C%88%EF%B8%8F-%23aa4444)](https://github.com/aviatesk/JET.jl)
+[![](https://img.shields.io/badge/%F0%9F%9B%A9%EF%B8%8F_tested_with-JET.jl-233f9a)](https://github.com/aviatesk/JET.jl)
 
 ### lambertw
 

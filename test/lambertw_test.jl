@@ -102,6 +102,9 @@ end # @testset "LambertW"
     # not a domain error, but not implemented
     @test_throws ArgumentError lambertwbp(1, 1)
     @test_throws DomainError lambertw(.3, 2)
+
+    @test_throws DomainError lambertwbp(1.1)
+    @test_throws DomainError lambertwbp(complex(1.1))
 end
 
 @testset "branch point" begin
@@ -112,31 +115,32 @@ end
     if Int != Int32
         # Test double-precision expansion near branch point using BigFloats
         sp = precision(BigFloat)
-        z = BigFloat(1)/10^12
-        setprecision(2048)
-        for i in 1:300
-#            innerarg = z - 1 / big(MathConstants.e)
-            innerarg = z + lambertwbranchpoint
-            # branch k = 0
-            wo = lambertwbp(Float64(z))
-            xdiff = abs(-1 + wo - lambertw(innerarg))
-            if xdiff > 5e-16
-                @warn(Float64(z), " ", Float64(xdiff))
-            end
-            @test xdiff < 5e-16
+        zinit = BigFloat(1)/10^12
+        for z in (zinit, complex(zinit))
+            setprecision(2048)
+            for _ in 1:300 # We break from loop long before 300
+                #            innerarg = z - 1 / big(MathConstants.e)
+                innerarg = z + lambertwbranchpoint
+                # branch k = 0
+                wo = lambertwbp(Float64(z))
+                xdiff = abs(-1 + wo - lambertw(innerarg))
+                if xdiff > 5e-16
+                    @warn(Float64(z), " ", Float64(xdiff))
+                end
+                @test xdiff < 5e-16
 
-            #  branch k = -1
-            wo = lambertwbp(Float64(z), -1)
-            xdiff = abs(-1 + wo - lambertw(innerarg, -1))
-            if xdiff > 5e-16
-                @warn(Float64(z), " ", Float64(xdiff))
+                #  branch k = -1
+                wo = lambertwbp(Float64(z), -1)
+                xdiff = abs(-1 + wo - lambertw(innerarg, -1))
+                if xdiff > 5e-16
+                    @warn(Float64(z), " ", Float64(xdiff))
+                end
+                @test xdiff < 5e-16
+                z  *= 1.1
+                if abs(z) > 0.23 break end
             end
-            @test xdiff < 5e-16
-            z  *= 1.1
-            if z > 0.23 break end
+            setprecision(sp)
         end
-        setprecision(sp)
-
         # test the expansion about branch point for k=-1,
         # by comparing to exact BigFloat calculation.
         @test lambertwbp(1e-20, -1) - 1 - lambertw(-BigFloat(1)/big(MathConstants.e)+ BigFloat(1)/BigFloat(10)^BigFloat(20), -1) < 1e-16
@@ -165,4 +169,21 @@ end
     @test km1val == -1.0
     @test k0val isa Float64
     @test km1val isa Float64
+end
+
+@testset "complex code paths" begin
+    z = complex(1/MathConstants.e - .01)
+    @test isapprox(lambertw(z), 0.27251232622985155)
+    @test isapprox(lambertw(z, -1), -2.6181060466381134 - 4.1495292474932475im)
+end
+
+@testset "finv" begin
+    lambertw_inv = LambertW.finv(lambertw)
+    z = 42.0
+    w = lambertw(z)
+    @test isapprox(z, lambertw_inv(w))
+end
+
+@testset "show" begin
+    @test string(LambertW.Omega()) == "ω"
 end

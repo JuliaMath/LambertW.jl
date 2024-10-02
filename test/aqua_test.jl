@@ -24,8 +24,8 @@ end
     Aqua.test_ambiguities([LambertW, Core, Base])
 end
 
-@testset "aqua piracy" begin
-    Aqua.test_piracy(LambertW)
+@testset "aqua piracies" begin
+    Aqua.test_piracies(LambertW)
 end
 
 @testset "aqua project extras" begin
