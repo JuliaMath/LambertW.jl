@@ -4,6 +4,7 @@ using Test
 
 include("lambertw_test.jl")
 include("aqua_test.jl")
+include("small_neg_real_test.jl")
 
 if VERSION >= v"1.7"
     include("jet_test.jl")

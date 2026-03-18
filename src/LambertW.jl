@@ -133,7 +133,7 @@ end
 # choose initial value inside correct branch for root finding
 function _lambertw(z::Complex{T}, k::Integer, maxits::Integer) where T<:Real
     one_t = one(T)
-    pointseven = 7//10
+    pointseven = 0.7
     if abs(z) <= one_t/convert(T, MathConstants.e)
         if z == 0
             k == 0 && return _no_loop(z)
